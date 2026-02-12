@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AXTRON | Player</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/video.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="brand" onclick="window.location.href='index.html'">AXTRON</div>
+        <nav class="nav-menu" id="sidebarMenu"></nav>
+        <div class="nav-footer"><div id="logoutArea"></div></div>
+    </aside>
+    <header class="top-bar">
+        <div class="brand-mobile" onclick="window.location.href='index.html'">AXTRON</div>
+        <div class="search-container">
+            <i class="ph ph-magnifying-glass search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar...">
+        </div>
+        <div class="auth-group" id="headerAuth"></div>
+    </header>
+    <div class="video-layout-grid">
+        <main class="main-column">
+            <div class="theater-player" id="playerWrapper">
+                <video id="mainVideo" controls playsinline poster="https://placehold.co/1920x1080/111/333?text=Carregando..."></video>
+                <div class="pause-ad-overlay" id="pauseOverlay">
+                    <div class="ad-box">
+                        <h4>🔥 Gostou? Veja a versão completa!</h4>
+                        <p>Acesso exclusivo no VIP.</p>
+                        <button class="btn-primary-glow" onclick="window.location.href='profile.html'">DESBLOQUEAR TUDO</button>
+                        <span class="close-ad" onclick="closeAd()">Voltar ao vídeo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="video-info-area">
+                <h1 id="videoTitle">Carregando título...</h1>
+                <div class="video-stats-row">
+                    <span style="color:#aaa;">1.2M Visualizações • Há 2 horas</span>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="videoApp.actions.like(this)"><i class="ph ph-thumbs-up"></i> <span class="count">12k</span></button>
+                        <button class="action-btn" onclick="videoApp.actions.share()"><i class="ph ph-share-fat"></i> Compartilhar</button>
+                        <button class="action-btn highlight" onclick="window.location.href='profile.html'"><i class="ph ph-currency-dollar"></i> Apoiar</button>
+                    </div>
+                </div>
+                <div class="channel-row">
+                    <img src="https://placehold.co/100x100/ff0055/fff?text=K" class="channel-avatar">
+                    <div class="channel-info">
+                        <h4>Key Alves Oficial <i class="ph ph-seal-check-fill verified-icon"></i></h4>
+                        <span>125k Seguidores</span>
+                    </div>
+                    <button class="btn-subscribe">SEGUIR</button>
+                </div>
+            </div>
+            <div class="comments-section">
+                <h3><i class="ph ph-chat-circle-text"></i> 4 Comentários</h3>
+                <div class="comment-input-box">
+                    <img src="https://placehold.co/50x50/333/666?text=Eu" class="user-avatar-small">
+                    <input type="text" placeholder="Deixe seu comentário..." id="commentInput">
+                    <button onclick="videoApp.actions.postComment()"><i class="ph ph-paper-plane-right"></i></button>
+                </div>
+                <div class="comments-list" id="commentsList"></div>
+            </div>
+        </main>
+        <aside class="related-sidebar">
+            <h3 style="font-size:1rem; margin-bottom:15px; padding-left:10px;">A seguir</h3>
+            <div id="relatedFeed"></div>
+        </aside>
+    </div>
+    <nav class="bottom-nav" id="mobileMenu"></nav>
+    <div class="modal" id="loginModal">
+        <div class="modal-box">
+            <h2 style="color:white; margin-bottom:0.5rem;">Login Necessário</h2>
+            <p style="color:#888; margin-bottom:1rem;">Entre para interagir.</p>
+            <button onclick="app.auth.login()" class="btn-primary-glow" style="width:100%;">ENTRAR</button>
+            <p onclick="app.ui.closeLoginModal()" style="margin-top:15px; cursor:pointer; color:#666;">Cancelar</p>
+        </div>
+    </div>
+    <div id="toast" class="toast">Link copiado!</div>
+    <script src="js/app.js"></script>
+    <script src="js/video.js"></script>
+</body>
+</html>

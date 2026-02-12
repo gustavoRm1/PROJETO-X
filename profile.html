@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Creator Studio | AXTRON</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/profile.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand" onclick="window.location.href='index.html'">AXTRON</div>
+        <nav class="nav-menu" id="sidebarMenu"></nav>
+        <div class="nav-footer">
+            <button class="nav-btn"><i class="ph ph-gear"></i> Config</button>
+            <div id="logoutArea"></div>
+        </div>
+    </aside>
+
+    <main class="profile-layout">
+        <header class="profile-header">
+            <div class="cover-image"></div>
+            <div class="profile-info-bar">
+                <div class="avatar-wrapper">
+                    <img src="https://placehold.co/200x200/ff0055/fff?text=EU" class="avatar-img">
+                </div>
+                <div class="profile-texts">
+                    <h1>Usuario Vip <i class="ph ph-seal-check-fill verified-icon"></i></h1>
+                    <span class="username">@usuariovip</span>
+                    <div class="stats-row">
+                        <div class="stat-item"><strong>12.5k</strong> Seguidores</div>
+                        <div class="stat-item"><strong>R$ 4.5k</strong> Ganhos</div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-primary-glow" onclick="toggleUploadModal()"><i class="ph ph-plus-circle"></i> NOVO VÍDEO</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="profile-feed" id="user-feed">
+            </div>
+    </main>
+
+    <nav class="bottom-nav" id="mobileMenu"></nav>
+
+    <div class="modal" id="uploadModal">
+        <div class="modal-box" style="text-align:left; max-width:500px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+                <h3>Upload</h3>
+                <button onclick="toggleUploadModal()" style="background:none; border:none; color:white;"><i class="ph ph-x"></i></button>
+            </div>
+            <div style="border:2px dashed #444; padding:40px; text-align:center; border-radius:12px; margin-bottom:20px;">
+                <i class="ph ph-cloud-arrow-up" style="font-size:3rem; color:#666;"></i>
+                <p>Arraste o vídeo</p>
+            </div>
+            <button class="btn-primary-glow" style="width:100%; justify-content:center;">SELECIONAR ARQUIVO</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/profile.js"></script>
+</body>
+</html>

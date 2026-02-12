@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AXTRON | Premium Experience</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <link rel="stylesheet" href="css/global.css">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="brand" onclick="window.location.href='index.html'">AXTRON</div>
+        <nav class="nav-menu" id="sidebarMenu"></nav>
+        <div class="nav-footer"><div id="logoutArea"></div></div>
+    </aside>
+
+    <header class="top-bar">
+        <div class="brand-mobile">AXTRON</div>
+        <div class="search-container">
+            <i class="ph ph-magnifying-glass search-icon"></i>
+            <input type="text" class="search-input" placeholder="Buscar...">
+        </div>
+        <div class="auth-group" id="headerAuth"></div>
+    </header>
+
+    <div id="home-content">
+        
+        <section class="stories-rail" id="storiesContainer"></section>
+
+        <section class="hero-section">
+            <div class="hero-carousel" id="heroContainer"></div>
+        </section>
+
+        <section class="continue-watching hidden" id="continueSection">
+            <h3 class="section-title"><i class="ph ph-clock-counter-clockwise"></i> Continue de onde parou</h3>
+            <div class="continue-scroll" id="continueFeed"></div>
+        </section>
+
+        <section class="category-wrapper">
+            <div class="category-scroll">
+                <button class="cat-pill active">🔥 Em Alta</button>
+                <button class="cat-pill">💎 VIP Only</button>
+                <button class="cat-pill">Novinhas</button>
+                <button class="cat-pill">Amador</button>
+                <button class="cat-pill">Anal</button>
+                <button class="cat-pill">POV</button>
+            </div>
+        </section>
+
+        <main id="feed-container" class="feed-grid"></main>
+    </div>
+
+    <nav class="bottom-nav" id="mobileMenu"></nav>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-box">
+            <h2 style="color:white; margin-bottom:0.5rem;">Acesso Restrito</h2>
+            <p id="loginMsg" style="color:#888; margin-bottom:1.5rem; font-size:0.9rem;">
+                Entre para desbloquear o conteúdo exclusivo.
+            </p>
+            <input type="email" placeholder="Email" class="input-dark" style="margin-bottom:10px;">
+            <input type="password" placeholder="Senha" class="input-dark" style="margin-bottom:20px;">
+            <button onclick="app.auth.login()" class="btn-primary-glow" style="width:100%; justify-content:center;">ENTRAR AGORA</button>
+            <p style="color:#666; font-size:0.8rem; margin-top:15px; cursor:pointer; text-align:center;" onclick="app.ui.closeLoginModal()">Cancelar</p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

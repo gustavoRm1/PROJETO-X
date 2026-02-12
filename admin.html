@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXTRON | Polymath Admin</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+    <aside class="admin-sidebar">
+        <div class="admin-brand">AXTRON <span class="badge-god">GOD</span></div>
+        <nav class="admin-nav">
+            <button class="nav-item active" onclick="adminApp.ui.switchTab('dashboard')">
+                <i class="ph ph-chart-line-up"></i> War Room
+            </button>
+            <button class="nav-item" onclick="adminApp.ui.switchTab('crm')">
+                <i class="ph ph-users-three"></i> CRM Intelligence
+            </button>
+            <button class="nav-item" onclick="adminApp.ui.switchTab('vazados')">
+                <i class="ph ph-lock-key-open"></i> Gestão VAZADOS
+            </button>
+            <button class="nav-item" onclick="adminApp.ui.switchTab('finance')">
+                <i class="ph ph-currency-dollar"></i> Financeiro
+            </button>
+        </nav>
+        <div class="admin-footer">
+            <button class="logout-btn" onclick="window.location.href='index.html'">
+                <i class="ph ph-sign-out"></i> Sair
+            </button>
+        </div>
+    </aside>
+
+    <main class="admin-main">
+        
+        <header class="admin-header">
+            <h2 id="pageTitle">War Room</h2>
+            <div class="header-actions">
+                <div class="server-status">
+                    <span id="cpuLoad">CPU: 14%</span>
+                    <span class="divider">|</span>
+                    <span id="ramLoad">RAM: 4.8GB</span>
+                    <div class="status-dot"></div> ONLINE
+                </div>
+                <div class="admin-profile">
+                    <img src="https://placehold.co/50x50/ff0055/fff?text=AD" class="admin-avatar">
+                </div>
+            </div>
+        </header>
+
+        <div id="tab-dashboard" class="tab-content active">
+            <div class="kpi-grid">
+                <div class="kpi-card glass">
+                    <div class="kpi-icon"><i class="ph ph-currency-circle-dollar"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-label">Receita Hoje</span>
+                        <h3 class="kpi-value">R$ 12.850,00</h3>
+                        <span class="kpi-trend positive"><i class="ph ph-trend-up"></i> +12%</span>
+                    </div>
+                </div>
+                <div class="kpi-card glass">
+                    <div class="kpi-icon" style="color:#00e5ff"><i class="ph ph-users"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-label">Assinantes Totais</span>
+                        <h3 class="kpi-value">8,402</h3>
+                        <span class="kpi-trend positive"><i class="ph ph-plus"></i> 145 Hoje</span>
+                    </div>
+                </div>
+                <div class="kpi-card glass">
+                    <div class="kpi-icon" style="color:#ffd700"><i class="ph ph-crown"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-label">Plano Líder</span>
+                        <h3 class="kpi-value" style="font-size:1.4rem">R$ 19,97 (60%)</h3>
+                        <span class="kpi-trend neutral">Ticket Médio Saudável</span>
+                    </div>
+                </div>
+                <div class="kpi-card glass alert">
+                    <div class="kpi-icon" style="color:#ff4444"><i class="ph ph-warning-octagon"></i></div>
+                    <div class="kpi-data">
+                        <span class="kpi-label">Risco Churn</span>
+                        <h3 class="kpi-value">2.4%</h3>
+                        <span class="kpi-trend negative">Atenção</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-container glass">
+                    <div class="chart-header">
+                        <h3><i class="ph ph-chart-bar"></i> Fluxo de Caixa</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+                <div class="live-feed glass">
+                    <div class="feed-header">
+                        <h3><i class="ph ph-lightning"></i> Vendas (Real-Time)</h3>
+                        <span class="live-badge">AO VIVO</span>
+                    </div>
+                    <div class="transaction-list" id="transactionFeed"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-crm" class="tab-content hidden">
+            <div class="data-table-wrapper"><table class="data-table"><tbody id="crmTableBody"></tbody></table></div>
+        </div>
+
+        <div id="tab-vazados" class="tab-content hidden">
+            <div class="vazados-header">
+                <div class="info-block">
+                    <h3>Gestão de Ativos (High Ticket)</h3>
+                    <p style="color:#888; font-size:0.9rem;">Monitore a saúde do estoque. Modelos sem postar há 7 dias geram Churn.</p>
+                </div>
+                <div class="header-actions-row">
+                    <button class="btn-action" onclick="adminApp.actions.sortModels('health')"><i class="ph ph-heartbeat"></i> Saúde do Estoque</button>
+                    <button class="btn-primary-god" onclick="adminApp.ui.openModelModal()">
+                        <i class="ph ph-plus-circle"></i> NOVO ATIVO
+                    </button>
+                </div>
+            </div>
+
+            <div class="search-toolbar-models">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="modelSearch" placeholder="Buscar modelo..." onkeyup="adminApp.actions.searchModel()">
+                <div class="result-count" id="modelCount">Calculando LTV...</div>
+            </div>
+
+            <div class="models-grid" id="modelsGrid">
+                </div>
+        </div>
+
+        <div id="tab-finance" class="tab-content hidden">
+            <div class="kpi-grid">
+                <div class="kpi-card glass"><div class="kpi-data"><span class="kpi-label">Saldo</span><h3 class="kpi-value text-success">R$ 145.200,00</h3></div></div>
+            </div>
+            <div class="data-table-wrapper">
+                <div class="feed-header"><h3>Últimas Transações</h3></div>
+                <table class="data-table"><tbody id="financeTableBody"></tbody></table>
+            </div>
+        </div>
+
+    </main>
+
+    <div class="modal right-drawer" id="userDeepDiveModal">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3 id="ddName">...</h3>
+                <button onclick="adminApp.ui.closeDrawer()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <div id="ddContent" class="drawer-body"></div>
+            <div class="drawer-footer">
+                <button class="btn-action danger full" onclick="alert('Banido!')"><i class="ph ph-skull"></i> BANIR</button>
+                <button class="btn-action primary full"><i class="ph ph-chat"></i> MENSAGEM</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="vazadoModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modelModalTitle">Novo Ativo</h3>
+                <button onclick="adminApp.ui.closeModelModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            <input type="hidden" id="modelIdEdit">
+            <div class="form-group">
+                <label>Nome do Ativo (Modelo)</label>
+                <input type="text" id="modelNameInput" class="admin-input" placeholder="Ex: Key Alves">
+            </div>
+            <div class="file-drop-area" onclick="document.getElementById('modelCoverInput').click()">
+                <i class="ph ph-image"></i>
+                <p>Foto de Capa (Alta Conversão)</p>
+                <input type="file" id="modelCoverInput" hidden>
+            </div>
+            <button class="btn-primary-god full" onclick="adminApp.actions.saveModel()">SALVAR NO SISTEMA</button>
+        </div>
+    </div>
+
+    <div class="modal" id="contentModal">
+        <div class="modal-box large">
+            <div class="modal-header">
+                <h3><i class="ph ph-video-camera" style="color:var(--primary)"></i> Ingestão de Conteúdo</h3>
+                <button onclick="adminApp.ui.closeContentModal()" class="close-btn"><i class="ph ph-x"></i></button>
+            </div>
+            
+            <p id="contentModalSubtitle" style="color:#888; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"></p>
+
+            <div class="content-upload-grid">
+                <div class="upload-col">
+                    <label>1. Arquivo Mestre (MP4)</label>
+                    <div class="file-drop-area">
+                        <i class="ph ph-file-video"></i>
+                        <p>Arrastar Vídeo (Max 2GB)</p>
+                    </div>
+                    
+                    <div class="teaser-control">
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="autoTeaser" checked>
+                            <label for="autoTeaser">Gerar Teaser (GIF 5s) Automático</label>
+                        </div>
+                        <small style="color:#666; display:block; margin-top:5px;">Essencial para o feed de dopamina.</small>
+                    </div>
+                </div>
+
+                <div class="data-col">
+                    <div class="form-group">
+                        <label>Título do Conteúdo</label>
+                        <input type="text" class="admin-input" placeholder="Ex: Vazado do banheiro...">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Estratégia de Preço (Naval)</label>
+                        <div class="price-input-group">
+                            <input type="number" id="videoPrice" class="admin-input" value="22.90">
+                            <button class="btn-ai-price" onclick="adminApp.actions.calculateSmartPrice()"><i class="ph ph-magic-wand"></i> AI Price</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tipo de Venda</label>
+                        <select class="admin-select">
+                            <option value="single">Venda Única (Unitário)</option>
+                            <option value="bundle">📦 Criar Bundle (Pack)</option>
+                        </select>
+                    </div>
+
+                    <div class="notification-box">
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                        <div class="notif-text">
+                            <strong>Notificar Base (Push)</strong>
+                            <span>Impacto estimado: +15% Vendas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-primary-god full" onclick="alert('Processando HLS + Gerando Teaser + Notificando Base! 🚀')">
+                PUBLICAR E MONETIZAR
+            </button>
+        </div>
+    </div>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>
