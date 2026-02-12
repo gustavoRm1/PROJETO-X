@@ -1,16 +1,29 @@
 version: '3.9'
+
 services:
+  # 1. Aplicação (Node.js + Frontend)
   app:
     build: .
+    restart: always
     ports:
       - "4000:4000"
-    env_file:
-      - .env
+    environment:
+      # Conexão interna do Docker (usa o nome do serviço 'postgres')
+      DATABASE_URL: postgres://user:password@postgres:5432/axtron
+      REDIS_URL: redis://redis:6379
+      PORT: 4000
+      JWT_SECRET: ${JWT_SECRET}
+      UPLOAD_PATH: ./uploads
     depends_on:
       - postgres
       - redis
     volumes:
       - ./uploads:/app/uploads
+      - ./public:/app/public  # Mapeia alterações no site sem precisar rebuildar
+    networks:
+      - axtron_net
+
+  # 2. Banco de Dados
   postgres:
     image: postgres:15
     restart: always
@@ -18,13 +31,23 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: axtron
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - axtron_net
+
+  # 3. Cache
   redis:
     image: redis:alpine
-    ports:
-      - "6379:6379"
+    restart: always
+    volumes:
+      - redisdata:/data
+    networks:
+      - axtron_net
+
 volumes:
   pgdata:
+  redisdata:
+
+networks:
+  axtron_net:
