@@ -3,6 +3,6 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
-RUN mkdir -p uploads
+RUN mkdir -p uploads public
 EXPOSE 4000
 CMD ["node", "server.js"]
