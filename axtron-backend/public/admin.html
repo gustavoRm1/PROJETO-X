@@ -1,255 +1,558 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AXTRON | Polymath Admin</title>
+    <title>DesejosHot - Painel Administrativo</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .drop-zone {
+            border: 3px dashed #a78bfa;
+            background: rgba(167, 139, 250, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .drop-zone:hover {
+            background: rgba(167, 139, 250, 0.2);
+            border-color: #c4b5fd;
+            transform: scale(1.01);
+        }
+        
+        .drop-zone.dragover {
+            background: rgba(167, 139, 250, 0.3);
+            border-color: #e9d5ff;
+            transform: scale(1.03);
+        }
+        
+        .progress-bar {
+            transition: width 0.3s ease;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .task-item {
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+    </style>
 </head>
 <body>
-
-    <aside class="admin-sidebar">
-        <div class="admin-brand">AXTRON <span class="badge-god">GOD</span></div>
-        <nav class="admin-nav">
-            <button class="nav-item active" onclick="adminApp.ui.switchTab('dashboard')">
-                <i class="ph ph-chart-line-up"></i> War Room
-            </button>
-            <button class="nav-item" onclick="adminApp.ui.switchTab('crm')">
-                <i class="ph ph-users-three"></i> CRM Intelligence
-            </button>
-            <button class="nav-item" onclick="adminApp.ui.switchTab('vazados')">
-                <i class="ph ph-lock-key-open"></i> Gestão VAZADOS
-            </button>
-            <button class="nav-item" onclick="adminApp.ui.switchTab('finance')">
-                <i class="ph ph-currency-dollar"></i> Financeiro
-            </button>
-        </nav>
-        <div class="admin-footer">
-            <button class="logout-btn" onclick="window.location.href='index.html'">
-                <i class="ph ph-sign-out"></i> Sair
-            </button>
-        </div>
-    </aside>
-
-    <main class="admin-main">
-        
-        <header class="admin-header">
-            <h2 id="pageTitle">War Room</h2>
-            <div class="header-actions">
-                <div class="server-status">
-                    <span id="cpuLoad">CPU: 14%</span>
-                    <span class="divider">|</span>
-                    <span id="ramLoad">RAM: 4.8GB</span>
-                    <div class="status-dot"></div> ONLINE
+    
+    <!-- Header -->
+    <div class="bg-white bg-opacity-10 backdrop-blur-md border-b border-white border-opacity-20">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-fire text-orange-400 text-3xl"></i>
+                    <h1 class="text-2xl font-bold text-white">DesejosHot Admin</h1>
+                    <span class="px-3 py-1 bg-green-500 text-white text-xs rounded-full">ONLINE</span>
                 </div>
-                <div class="admin-profile">
-                    <img src="https://placehold.co/50x50/ff0055/fff?text=AD" class="admin-avatar">
-                </div>
-            </div>
-        </header>
-
-        <div id="tab-dashboard" class="tab-content active">
-            <div class="kpi-grid">
-                <div class="kpi-card glass">
-                    <div class="kpi-icon"><i class="ph ph-currency-circle-dollar"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-label">Receita Hoje</span>
-                        <h3 class="kpi-value">R$ 12.850,00</h3>
-                        <span class="kpi-trend positive"><i class="ph ph-trend-up"></i> +12%</span>
+                
+                <div class="flex items-center space-x-6 text-white">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-robot text-purple-300"></i>
+                        <span class="text-sm">IA Ativa</span>
                     </div>
-                </div>
-                <div class="kpi-card glass">
-                    <div class="kpi-icon" style="color:#00e5ff"><i class="ph ph-users"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-label">Assinantes Totais</span>
-                        <h3 class="kpi-value">8,402</h3>
-                        <span class="kpi-trend positive"><i class="ph ph-plus"></i> 145 Hoje</span>
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-database text-blue-300"></i>
+                        <span class="text-sm">MySQL</span>
                     </div>
-                </div>
-                <div class="kpi-card glass">
-                    <div class="kpi-icon" style="color:#ffd700"><i class="ph ph-crown"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-label">Plano Líder</span>
-                        <h3 class="kpi-value" style="font-size:1.4rem">R$ 19,97 (60%)</h3>
-                        <span class="kpi-trend neutral">Ticket Médio Saudável</span>
-                    </div>
-                </div>
-                <div class="kpi-card glass alert">
-                    <div class="kpi-icon" style="color:#ff4444"><i class="ph ph-warning-octagon"></i></div>
-                    <div class="kpi-data">
-                        <span class="kpi-label">Risco Churn</span>
-                        <h3 class="kpi-value">2.4%</h3>
-                        <span class="kpi-trend negative">Atenção</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="charts-section">
-                <div class="chart-container glass">
-                    <div class="chart-header">
-                        <h3><i class="ph ph-chart-bar"></i> Fluxo de Caixa</h3>
-                    </div>
-                    <div class="chart-wrapper">
-                        <canvas id="revenueChart"></canvas>
-                    </div>
-                </div>
-                <div class="live-feed glass">
-                    <div class="feed-header">
-                        <h3><i class="ph ph-lightning"></i> Vendas (Real-Time)</h3>
-                        <span class="live-badge">AO VIVO</span>
-                    </div>
-                    <div class="transaction-list" id="transactionFeed"></div>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-crm" class="tab-content hidden">
-            <div class="data-table-wrapper"><table class="data-table"><tbody id="crmTableBody"></tbody></table></div>
-        </div>
-
-        <div id="tab-vazados" class="tab-content hidden">
-            <div class="vazados-header">
-                <div class="info-block">
-                    <h3>Gestão de Ativos (High Ticket)</h3>
-                    <p style="color:#888; font-size:0.9rem;">Monitore a saúde do estoque. Modelos sem postar há 7 dias geram Churn.</p>
-                </div>
-                <div class="header-actions-row">
-                    <button class="btn-action" onclick="adminApp.actions.sortModels('health')"><i class="ph ph-heartbeat"></i> Saúde do Estoque</button>
-                    <button class="btn-primary-god" onclick="adminApp.ui.openModelModal()">
-                        <i class="ph ph-plus-circle"></i> NOVO ATIVO
+                    <button onclick="logout()" class="px-4 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Sair
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <div class="search-toolbar-models">
-                <i class="ph ph-magnifying-glass"></i>
-                <input type="text" id="modelSearch" placeholder="Buscar modelo..." onkeyup="adminApp.actions.searchModel()">
-                <div class="result-count" id="modelCount">Calculando LTV...</div>
-            </div>
-
-            <div class="models-grid" id="modelsGrid">
+    <div class="max-w-7xl mx-auto px-6 py-8">
+        
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white text-opacity-80 text-sm mb-1">Total de Vídeos</p>
+                        <p id="stat-videos" class="text-3xl font-bold">0</p>
+                    </div>
+                    <i class="fas fa-video text-5xl text-white text-opacity-30"></i>
                 </div>
-        </div>
-
-        <div id="tab-finance" class="tab-content hidden">
-            <div class="kpi-grid">
-                <div class="kpi-card glass"><div class="kpi-data"><span class="kpi-label">Saldo</span><h3 class="kpi-value text-success">R$ 145.200,00</h3></div></div>
-            </div>
-            <div class="data-table-wrapper">
-                <div class="feed-header"><h3>Últimas Transações</h3></div>
-                <table class="data-table"><tbody id="financeTableBody"></tbody></table>
-            </div>
-        </div>
-
-    </main>
-
-    <div class="modal right-drawer" id="userDeepDiveModal">
-        <div class="drawer-content">
-            <div class="drawer-header">
-                <h3 id="ddName">...</h3>
-                <button onclick="adminApp.ui.closeDrawer()" class="close-btn"><i class="ph ph-x"></i></button>
-            </div>
-            <div id="ddContent" class="drawer-body"></div>
-            <div class="drawer-footer">
-                <button class="btn-action danger full" onclick="alert('Banido!')"><i class="ph ph-skull"></i> BANIR</button>
-                <button class="btn-action primary full"><i class="ph ph-chat"></i> MENSAGEM</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal" id="vazadoModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h3 id="modelModalTitle">Novo Ativo</h3>
-                <button onclick="adminApp.ui.closeModelModal()" class="close-btn"><i class="ph ph-x"></i></button>
-            </div>
-            <input type="hidden" id="modelIdEdit">
-            <div class="form-group">
-                <label>Nome do Ativo (Modelo)</label>
-                <input type="text" id="modelNameInput" class="admin-input" placeholder="Ex: Key Alves">
-            </div>
-            <div class="file-drop-area" onclick="document.getElementById('modelCoverInput').click()">
-                <i class="ph ph-image"></i>
-                <p>Foto de Capa (Alta Conversão)</p>
-                <input type="file" id="modelCoverInput" hidden>
-            </div>
-            <button class="btn-primary-god full" onclick="adminApp.actions.saveModel()">SALVAR NO SISTEMA</button>
-        </div>
-    </div>
-
-    <div class="modal" id="contentModal">
-        <div class="modal-box large">
-            <div class="modal-header">
-                <h3><i class="ph ph-video-camera" style="color:var(--primary)"></i> Ingestão de Conteúdo</h3>
-                <button onclick="adminApp.ui.closeContentModal()" class="close-btn"><i class="ph ph-x"></i></button>
             </div>
             
-            <p id="contentModalSubtitle" style="color:#888; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;"></p>
-
-            <div class="content-upload-grid">
-                <div class="upload-col">
-                    <label>1. Arquivo Mestre (MP4)</label>
-                    <div class="file-drop-area">
-                        <i class="ph ph-file-video"></i>
-                        <p>Arrastar Vídeo (Max 2GB)</p>
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white text-opacity-80 text-sm mb-1">Na Fila</p>
+                        <p id="stat-queue" class="text-3xl font-bold pulse">0</p>
                     </div>
-                    
-                    <div class="teaser-control">
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="autoTeaser" checked>
-                            <label for="autoTeaser">Gerar Teaser (GIF 5s) Automático</label>
-                        </div>
-                        <small style="color:#666; display:block; margin-top:5px;">Essencial para o feed de dopamina.</small>
-                    </div>
+                    <i class="fas fa-clock text-5xl text-white text-opacity-30"></i>
                 </div>
-
-                <div class="data-col">
-                    <div class="form-group">
-                        <label>Título do Conteúdo</label>
-                        <input type="text" class="admin-input" placeholder="Ex: Vazado do banheiro...">
+            </div>
+            
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white text-opacity-80 text-sm mb-1">Idiomas</p>
+                        <p class="text-3xl font-bold">10</p>
                     </div>
-
-                    <div class="form-group">
-                        <label>Estratégia de Preço (Naval)</label>
-                        <div class="price-input-group">
-                            <input type="number" id="videoPrice" class="admin-input" value="22.90">
-                            <button class="btn-ai-price" onclick="adminApp.actions.calculateSmartPrice()"><i class="ph ph-magic-wand"></i> AI Price</button>
-                        </div>
+                    <i class="fas fa-globe text-5xl text-white text-opacity-30"></i>
+                </div>
+            </div>
+            
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white text-opacity-80 text-sm mb-1">Custo IA Hoje</p>
+                        <p id="stat-cost" class="text-3xl font-bold">$0.00</p>
                     </div>
+                    <i class="fas fa-dollar-sign text-5xl text-white text-opacity-30"></i>
+                </div>
+            </div>
+        </div>
 
-                    <div class="form-group">
-                        <label>Tipo de Venda</label>
-                        <select class="admin-select">
-                            <option value="single">Venda Única (Unitário)</option>
-                            <option value="bundle">📦 Criar Bundle (Pack)</option>
-                        </select>
+        <!-- Main Upload Card -->
+        <div class="card rounded-2xl p-8 mb-8">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-3xl font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-robot text-purple-600 mr-3"></i>
+                    Upload Inteligente com IA
+                </h2>
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                        <span>Gemini AI</span>
                     </div>
-
-                    <div class="notification-box">
-                        <label class="toggle-switch">
-                            <input type="checkbox" checked>
-                            <span class="slider"></span>
-                        </label>
-                        <div class="notif-text">
-                            <strong>Notificar Base (Push)</strong>
-                            <span>Impacto estimado: +15% Vendas</span>
-                        </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                        <span>FFmpeg</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-orange-500 rounded-full animate-pulse"></div>
+                        <span>Redis Queue</span>
                     </div>
                 </div>
             </div>
+            
+            <form id="upload-form" onsubmit="uploadVideo(event)">
+                <!-- Drop Zone -->
+                <div id="drop-zone" class="drop-zone rounded-xl p-16 text-center mb-6">
+                    <i class="fas fa-cloud-upload-alt text-8xl text-purple-400 mb-4"></i>
+                    <p class="text-2xl font-bold text-gray-700 mb-2">Arraste o vídeo aqui</p>
+                    <p class="text-gray-500 mb-4">ou clique para selecionar</p>
+                    <p class="text-sm text-gray-400">Formatos: MP4, WebM, AVI (máx 5GB)</p>
+                    <input type="file" id="video-file" accept="video/*" hidden>
+                    
+                    <div id="file-info" class="hidden mt-6 p-4 bg-purple-100 rounded-lg">
+                        <div class="flex items-center justify-center space-x-4">
+                            <i class="fas fa-file-video text-3xl text-purple-600"></i>
+                            <div class="text-left">
+                                <p id="file-name" class="font-bold text-gray-800"></p>
+                                <p id="file-size" class="text-sm text-gray-600"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Options -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="block mb-2 font-semibold text-gray-700">
+                            <i class="fas fa-tag mr-2 text-purple-600"></i>
+                            Categoria
+                        </label>
+                        <select id="category" class="w-full bg-gray-100 border-2 border-gray-200 rounded-lg px-4 py-3 focus:border-purple-500 focus:outline-none transition">
+                            <option value="">IA vai escolher automaticamente</option>
+                            <option value="1">Amador</option>
+                            <option value="2">Profissional</option>
+                            <option value="3">Lésbicas</option>
+                            <option value="4">Anal</option>
+                            <option value="5">Oral</option>
+                            <option value="6">MILF</option>
+                            <option value="7">Teen 18+</option>
+                            <option value="8">Latina</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block mb-2 font-semibold text-gray-700">
+                            <i class="fas fa-cog mr-2 text-purple-600"></i>
+                            Opções
+                        </label>
+                        <div class="space-y-2">
+                            <label class="flex items-center cursor-pointer p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                                <input type="checkbox" id="is-premium" class="mr-3 w-5 h-5">
+                                <i class="fas fa-crown text-yellow-500 mr-2"></i>
+                                <span class="font-semibold">Conteúdo Premium</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer p-3 bg-gray-100 rounded-lg hover:bg-gray-200 transition">
+                                <input type="checkbox" id="auto-publish" class="mr-3 w-5 h-5" checked>
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="font-semibold">Publicar Automaticamente</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Upload Button -->
+                <button type="submit" id="upload-btn" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-4 rounded-xl font-bold text-lg transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    <i class="fas fa-rocket mr-2"></i>
+                    INICIAR PROCESSAMENTO COM IA
+                </button>
+                
+                <!-- Progress Bar -->
+                <div id="upload-progress" class="hidden mt-6">
+                    <div class="flex justify-between mb-2 text-sm font-semibold">
+                        <span id="progress-text" class="text-gray-700">Preparando...</span>
+                        <span id="progress-percent" class="text-purple-600">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div id="progress-bar" class="progress-bar h-4 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-            <button class="btn-primary-god full" onclick="alert('Processando HLS + Gerando Teaser + Notificando Base! 🚀')">
-                PUBLICAR E MONETIZAR
-            </button>
+        <!-- Tasks Status -->
+        <div id="tasks-container" class="hidden card rounded-2xl p-8">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-tasks text-purple-600 mr-3"></i>
+                Pipeline de Processamento
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="task-item flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-image text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Seleção de Thumbnail</p>
+                            <p class="text-sm text-gray-600">IA analisa 10 frames e escolhe o melhor</p>
+                        </div>
+                    </div>
+                    <div id="task-thumbnail" class="text-gray-400 font-semibold">
+                        <i class="fas fa-clock mr-2"></i>Aguardando...
+                    </div>
+                </div>
+                
+                <div class="task-item flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border-2 border-blue-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-brain text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Análise IA - Metadados SEO</p>
+                            <p class="text-sm text-gray-600">Título, descrição, tags e keywords</p>
+                        </div>
+                    </div>
+                    <div id="task-metadata" class="text-gray-400 font-semibold">
+                        <i class="fas fa-clock mr-2"></i>Aguardando...
+                    </div>
+                </div>
+                
+                <div class="task-item flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border-2 border-green-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-language text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Tradução Multilíngue</p>
+                            <p class="text-sm text-gray-600">10 idiomas: EN, ES, FR, DE, IT, RU, JA, AR, HI</p>
+                        </div>
+                    </div>
+                    <div id="task-translation" class="text-gray-400 font-semibold">
+                        <i class="fas fa-clock mr-2"></i>Aguardando...
+                    </div>
+                </div>
+                
+                <div class="task-item flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-xl border-2 border-orange-200">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-microphone text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-800">Transcrição de Áudio</p>
+                            <p class="text-sm text-gray-600">Extrai e transcreve áudio (se houver)</p>
+                        </div>
+                    </div>
+                    <div id="task-transcription" class="text-gray-400 font-semibold">
+                        <i class="fas fa-clock mr-2"></i>Aguardando...
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="success-message" class="hidden mt-6 p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-2xl font-bold mb-2">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Vídeo Publicado com Sucesso!
+                    </p>
+                    <p class="text-green-100">O vídeo está online em 10 idiomas com SEO otimizado</p>
+                </div>
+                <a id="view-video-link" href="#" target="_blank" class="px-6 py-3 bg-white text-green-600 rounded-lg font-bold hover:bg-green-50 transition">
+                    Ver Vídeo
+                    <i class="fas fa-external-link-alt ml-2"></i>
+                </a>
+            </div>
         </div>
     </div>
 
-    <script src="js/admin.js"></script>
+    <script>
+        const API_URL = window.location.origin + '/api';
+        let currentVideoId = null;
+        
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('video-file');
+        
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                showFileInfo(e.dataTransfer.files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showFileInfo(e.target.files[0]);
+            }
+        });
+        
+        function showFileInfo(file) {
+            document.getElementById('file-info').classList.remove('hidden');
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = formatFileSize(file.size);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+        }
+        
+        async function uploadVideo(e) {
+            e.preventDefault();
+            
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('❌ Selecione um vídeo primeiro');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024 * 1024) {
+                alert('❌ Arquivo muito grande! Máximo 5GB');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('video', file);
+            formData.append('category_id', document.getElementById('category').value);
+            formData.append('is_premium', document.getElementById('is-premium').checked ? 1 : 0);
+            
+            document.getElementById('upload-btn').disabled = true;
+            document.getElementById('upload-progress').classList.remove('hidden');
+            document.getElementById('tasks-container').classList.remove('hidden');
+            
+            try {
+                const xhr = new XMLHttpRequest();
+                
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        updateProgress(percent, 'Enviando vídeo...');
+                    }
+                });
+                
+                xhr.addEventListener('load', async () => {
+                    if (xhr.status === 200) {
+                        const response = JSON.parse(xhr.responseText);
+                        currentVideoId = response.videoId;
+                        
+                        updateProgress(100, '✅ Upload completo! Iniciando processamento...');
+                        
+                        setTimeout(() => {
+                            monitorProcessing(response.videoId);
+                        }, 2000);
+                    } else {
+                        throw new Error('Erro no upload');
+                    }
+                });
+                
+                xhr.addEventListener('error', () => {
+                    throw new Error('Erro de rede');
+                });
+                
+                xhr.open('POST', `${API_URL}/admin/upload`);
+                xhr.send(formData);
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro no upload: ' + error.message);
+                document.getElementById('upload-btn').disabled = false;
+            }
+        }
+        
+        function updateProgress(percent, text) {
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('progress-percent').textContent = percent + '%';
+            document.getElementById('progress-text').textContent = text;
+        }
+        
+        async function monitorProcessing(videoId) {
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch(`${API_URL}/admin/upload/status/${videoId}`);
+                    
+                    if (!res.ok) {
+                        throw new Error('Erro ao buscar status');
+                    }
+                    
+                    const data = await res.json();
+                    
+                    if (data.tasks) {
+                        data.tasks.forEach(task => {
+                            updateTaskStatus(task.type, task.status);
+                        });
+                    }
+                    
+                    if (data.progress) {
+                        updateProgress(data.progress, `Processamento ${data.progress}%`);
+                    }
+                    
+                    if (data.status === 'ready') {
+                        clearInterval(interval);
+                        showSuccess(videoId, data.uuid);
+                    }
+                    
+                } catch (error) {
+                    console.error('Erro ao monitorar:', error);
+                }
+            }, 3000);
+            
+            setTimeout(() => {
+                clearInterval(interval);
+                console.warn('Timeout do monitoramento');
+            }, 600000);
+        }
+        
+        function updateTaskStatus(taskType, status) {
+            const taskElement = document.getElementById(`task-${taskType}`);
+            if (!taskElement) return;
+            
+            if (status === 'completed') {
+                taskElement.innerHTML = '<i class="fas fa-check-circle text-green-500 mr-2"></i><span class="text-green-600 font-bold">Completo</span>';
+            } else if (status === 'processing') {
+                taskElement.innerHTML = '<i class="fas fa-spinner fa-spin text-blue-500 mr-2"></i><span class="text-blue-600 font-bold">Processando...</span>';
+            } else if (status === 'failed') {
+                taskElement.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-red-600 font-bold">Erro</span>';
+            }
+        }
+        
+        function showSuccess(videoId, uuid) {
+            updateProgress(100, '🎉 Processamento Completo!');
+            
+            document.getElementById('success-message').classList.remove('hidden');
+            document.getElementById('view-video-link').href = `/video/${uuid}`;
+            
+            loadStats();
+            
+            setTimeout(() => {
+                resetForm();
+            }, 10000);
+        }
+        
+        function resetForm() {
+            document.getElementById('upload-form').reset();
+            document.getElementById('upload-btn').disabled = false;
+            document.getElementById('upload-progress').classList.add('hidden');
+            document.getElementById('tasks-container').classList.add('hidden');
+            document.getElementById('file-info').classList.add('hidden');
+            document.getElementById('success-message').classList.add('hidden');
+            
+            ['thumbnail', 'metadata', 'translation', 'transcription'].forEach(task => {
+                document.getElementById(`task-${task}`).innerHTML = '<i class="fas fa-clock mr-2"></i>Aguardando...';
+            });
+        }
+        
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_URL}/admin/stats`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('stat-videos').textContent = data.total_videos || 0;
+                    document.getElementById('stat-queue').textContent = data.queue_pending || 0;
+                    document.getElementById('stat-cost').textContent = `$${(data.ai_cost || 0).toFixed(2)}`;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar stats:', error);
+            }
+        }
+        
+        setInterval(loadStats, 5000);
+        loadStats();
+        
+        function logout() {
+            localStorage.removeItem('auth_token');
+            window.location.href = '/login.html';
+        }
+        
+        if (!localStorage.getItem('auth_token')) {
+            window.location.href = '/login.html';
+        }
+    </script>
 </body>
 </html>
