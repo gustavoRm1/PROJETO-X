@@ -12,8 +12,44 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
+const authRequestStore = new Map();
+const authWindowMs = 15 * 60 * 1000;
+const authMaxRequests = 100;
+
+const authLimiter = (req, res, next) => {
+  const key = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+  const now = Date.now();
+  const register = authRequestStore.get(key);
+
+  if (!register || now > register.resetAt) {
+    authRequestStore.set(key, { count: 1, resetAt: now + authWindowMs });
+    return next();
+  }
+
+  register.count += 1;
+
+  if (register.count > authMaxRequests) {
+    return res.status(429).json({ error: 'Muitas tentativas. Tente novamente em alguns minutos.' });
+  }
+
+  return next();
+};
+
+const securityHeaders = (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'no-referrer');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  next();
+};
+
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map((origin) => origin.trim())
+  : true;
+
 // Configurações
-app.use(cors());
+app.use(securityHeaders);
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -27,7 +63,7 @@ const publicPath = path.join(__dirname, 'public');
 app.use(express.static(publicPath));
 
 // 3. Rotas da API
-app.use('/auth', authRoutes);
+app.use('/auth', authLimiter, authRoutes);
 app.use('/posts', postRoutes);
 app.use('/comments', commentRoutes);
 app.use('/users', userRoutes);
