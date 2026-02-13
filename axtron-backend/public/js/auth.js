@@ -1,29 +1,33 @@
 async function login() {
-    const email = document.querySelector('input[type="email"], input[placeholder*="Email"]')?.value || '';
-    const pass = document.querySelector('input[type="password"]')?.value || '';
+    const emailInput = document.querySelector('input[type="email"]');
+    const passInput = document.querySelector('input[type="password"]');
     
-    if (!email || !pass) { 
-        alert('Preencha email e senha'); 
-        return; 
+    if(!emailInput?.value || !passInput?.value) {
+        alert('Por favor, preencha todos os campos.');
+        return;
     }
 
     try {
         const response = await fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password: pass })
+            body: JSON.stringify({
+                email: emailInput.value,
+                password: passInput.value
+            })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            localStorage.setItem('axtron_user', JSON.stringify(data.user));
             localStorage.setItem('axtron_token', data.token);
+            localStorage.setItem('axtron_user', JSON.stringify(data.user));
             window.location.href = 'index.html';
         } else {
-            alert(data.error || 'Erro ao entrar. Verifique suas credenciais.');
+            alert(data.error || 'Falha no login');
         }
-    } catch (error) {
-        alert('Erro ao conectar com o servidor.');
+    } catch (err) {
+        console.error("Erro no login:", err);
+        alert('Erro ao conectar ao servidor.');
     }
 }
