@@ -1,171 +1,122 @@
-/* === RESET & BASE (Dark Mode Nativo) === */
+/* === 1. BASE & RESET === */
 :root {
     --primary: #00ff88;
     --bg: #000000;
     --glass: rgba(255, 255, 255, 0.1);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body { background: var(--bg); color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; /* Importante para o App feel */ height: 100vh; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+body { background-color: var(--bg); color: white; overflow: hidden; height: 100vh; }
 
-/* === TOP BAR (Transparente) === */
+/* === 2. TOP BAR (Transparente) === */
 .top-bar {
-    position: fixed; top: 0; width: 100%; z-index: 100;
+    position: fixed; top: 0; left: 0; width: 100%; z-index: 10;
     display: flex; justify-content: space-between; align-items: center;
     padding: 15px 20px;
     background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
-.live-status { font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-.pulsing-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: pulse 1s infinite; }
-.tabs-control { font-weight: 600; font-size: 1rem; color: #888; }
-.tabs-control .active-tab { color: white; border-bottom: 2px solid white; padding-bottom: 3px; margin-right: 15px; }
+.logo-area { font-weight: 900; letter-spacing: -1px; }
+.dot { color: var(--primary); }
+.tabs { font-size: 1rem; font-weight: 600; color: #888; }
+.tabs .active { color: white; border-bottom: 2px solid white; margin-right: 15px; padding-bottom: 3px; }
 
-/* O Palco Principal */
+/* === 3. FEED PRINCIPAL (O IMÃ) === */
 #feed-view {
-    height: 100vh; /* Altura exata da tela */
+    height: 100vh;
     width: 100vw;
-    overflow-y: scroll; /* Permite rolar */
-    scroll-snap-type: y mandatory; /* O Imã */
-    background-color: #000;
-    scrollbar-width: none; /* Esconde barra de rolagem (Firefox) */
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory; /* OBRIGATÓRIO PARA TIKTOK FEEL */
+    scroll-behavior: smooth;
 }
-#feed-view::-webkit-scrollbar { display: none; /* Esconde barra (Chrome/Safari) */ }
 
-/* O Vídeo Individual */
+/* O Container de cada Vídeo */
 .video-item {
     position: relative;
     width: 100%;
-    height: 100vh; /* Ocupa 100% da tela sempre */
-    scroll-snap-align: start; /* Ponto de parada do imã */
+    height: 100vh;
+    scroll-snap-align: start; /* Ponto de parada */
     background: #111;
     overflow: hidden;
 }
 
-/* O Vídeo em si */
+/* O Player */
 .video-player {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Cobre a tela sem distorcer (zoom no centro) */
-    z-index: 0;
+    width: 100%; height: 100%; object-fit: cover;
 }
 
-/* A Névoa de Leitura (Gradiente) */
+/* Camada de Gradiente (Para ler o texto) */
 .video-gradient {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 50%;
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
     background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-    pointer-events: none; /* Deixa o clique passar para o vídeo */
+    pointer-events: none;
     z-index: 1;
 }
 
-/* Posicionamento das Ações (Direita) */
-.video-actions {
-    position: absolute;
-    right: 10px;
-    bottom: 100px; /* Acima da Bottom Bar */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    z-index: 3;
+/* === 4. INTERFACE DO VÍDEO === */
+/* Lateral Direita (Ações) */
+.sidebar-actions {
+    position: absolute; right: 10px; bottom: 90px;
+    z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 20px;
 }
-
-.action-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: white;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    cursor: pointer;
-}
-
-.action-btn i {
-    font-size: 30px; /* Tamanho grande para o dedo */
-    margin-bottom: 5px;
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.action-btn:active i { transform: scale(0.8); } /* Feedback de toque */
-
-.count { font-size: 12px; font-weight: 600; }
-
-/* Botão de Perfil com + */
-.profile-btn { position: relative; margin-bottom: 10px; }
-.profile-btn img {
-    width: 45px; height: 45px; border-radius: 50%; border: 2px solid white;
-}
-.add-icon {
-    position: absolute; bottom: -5px; left: 15px;
-    font-size: 14px !important;
-    background: #ff0044; color: white; border-radius: 50%; padding: 2px;
-}
-
-/* Informações (Esquerda) */
-.video-info {
-    position: absolute;
-    left: 15px;
-    bottom: 90px;
-    width: 70%;
-    z-index: 2;
-    color: white;
-}
-.username { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
-.description { font-size: 14px; opacity: 0.9; line-height: 1.3; }
-
-/* Barra Lateral de Ações */
-.actions-sidebar {
-    position: absolute; right: 10px; bottom: 80px;
-    display: flex; flex-direction: column; gap: 20px; align-items: center;
-    pointer-events: auto;
-}
-.action-btn { display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 3px black; }
-.action-btn i { font-size: 1.8rem; margin-bottom: 5px; transition: 0.2s; }
-.action-btn span { font-size: 0.7rem; font-weight: 600; }
+.action-btn { display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 2px black; }
+.action-btn i { font-size: 28px; margin-bottom: 5px; transition: 0.2s; }
+.action-btn span { font-size: 12px; font-weight: 600; }
 .action-btn:active i { transform: scale(0.8); color: var(--primary); }
 
-/* === VAULT VIEW (Escondida por padrão) === */
-.hidden-view { display: none; }
-#vault-view { padding: 80px 10px 80px 10px; height: 100vh; overflow-y: auto; }
-.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.grid-item { position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #222; }
-.grid-item img { width: 100%; height: 100%; object-fit: cover; }
-.locked-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: var(--primary);
-}
+/* Avatar com Botão (+) */
+.avatar-wrapper { position: relative; margin-bottom: 10px; }
+.avatar-wrapper img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid white; }
+.plus-badge { position: absolute; bottom: -5px; left: 18px; background: #ff0055; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
 
-/* === BOTTOM NAV (Barra Inferior) === */
+/* Texto Inferior (Info) */
+.video-info {
+    position: absolute; left: 15px; bottom: 80px; width: 75%;
+    z-index: 4; text-shadow: 1px 1px 2px black;
+}
+.username { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
+.desc { font-size: 0.95rem; line-height: 1.3; margin-bottom: 10px; color: #eee; }
+.music-tag { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+
+/* === 5. BOTTOM NAV === */
 .bottom-nav {
-    position: fixed; bottom: 0; width: 100%; height: 60px;
+    position: fixed; bottom: 0; width: 100%; height: 65px;
     background: black; border-top: 1px solid #222;
     display: flex; justify-content: space-around; align-items: center;
-    z-index: 200;
+    z-index: 20; padding-bottom: 5px;
 }
-.nav-item { color: #666; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
+.nav-item { color: #666; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; }
 .nav-item.active { color: white; }
-.nav-item i { font-size: 1.4rem; margin-bottom: 3px; }
+.nav-item i { font-size: 22px; margin-bottom: 4px; }
 
-/* Botão Plus Central */
-.plus-circle {
+/* Botão Central (+) */
+.plus-btn {
     width: 45px; height: 30px; background: linear-gradient(90deg, #00f2ea, #ff0050);
     border-radius: 8px; display: flex; justify-content: center; align-items: center;
     border-left: 3px solid #00f2ea; border-right: 3px solid #ff0050;
 }
-.plus-circle i { color: white; margin: 0; font-size: 1rem; }
 
-/* === MODAL & ANIMAÇÕES === */
+/* === 6. MODAL (NEON GATE) === */
 .modal-overlay {
     display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(10px);
 }
 .modal-card {
     background: #111; border: 1px solid #333; padding: 30px; border-radius: 20px;
     width: 90%; text-align: center; position: relative;
+    box-shadow: 0 0 30px rgba(0,255,136,0.1);
 }
-.cta-button {
-    background: var(--primary); color: black; border: none; width: 100%; padding: 15px;
-    font-weight: 900; border-radius: 10px; margin-top: 15px; font-size: 1rem;
+.input-box {
+    background: #222; border-radius: 10px; padding: 15px; margin-bottom: 15px;
+    display: flex; align-items: center; gap: 10px; border: 1px solid #333;
 }
-@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+.input-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
+.cta-btn {
+    width: 100%; background: var(--primary); padding: 15px; border: none; border-radius: 10px;
+    font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer;
+}
+.neon-text { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
+
+/* Loader */
+.loading-state { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #666; }
+.spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+@keyframes spin { 100% { transform: rotate(360deg); } }

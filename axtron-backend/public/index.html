@@ -2,93 +2,87 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AXTRON | Premium Stream</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AXTRON | Premium Access</title>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/config.js"></script>
+    <script src="js/config.js"></script> 
 </head>
 <body>
 
     <header class="top-bar">
-        <div class="live-status">
-            <span class="pulsing-dot"></span> LIVE
+        <div class="logo-area">
+            AXTRON <span class="dot">.</span>
         </div>
-        <div class="tabs-control">
-            <span class="active-tab">Para Você</span>
-            <span>Seguindo</span>
+        <div class="tabs">
+            <span class="tab active">Feed</span>
+            <span class="tab">Seguindo</span>
         </div>
-        <div class="search-icon">
+        <div class="search-btn">
             <i class="fa-solid fa-magnifying-glass"></i>
         </div>
     </header>
 
     <main id="app-view">
-        
-        <section id="feed-view" class="active-view"></section>
-
-        <section id="vault-view" class="hidden-view">
-            <div class="vault-header">
-                <h2>THE VAULT <i class="fa-solid fa-lock"></i></h2>
-                <p>Conteúdo Exclusivo & Vazados</p>
+        <section id="feed-view">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Carregando Feed...</p>
             </div>
-            <div id="vault-grid" class="grid-container">
-                </div>
-        </section>
-
+            </section>
     </main>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('feed')">
+        <div class="nav-item active">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
         </div>
-        <div class="nav-item" onclick="switchTab('vault')">
+        <div class="nav-item">
             <i class="fa-solid fa-compass"></i>
-            <span>Explore</span>
+            <span>Discover</span>
         </div>
-        
         <div class="nav-item center-add" onclick="abrirModal()">
-            <div class="plus-circle">
-                <i class="fa-solid fa-plus"></i>
-            </div>
+            <div class="plus-btn"><i class="fa-solid fa-plus"></i></div>
         </div>
-
-        <div class="nav-item" onclick="alert('Caixa de Entrada Vazia')">
-            <i class="fa-regular fa-message"></i>
+        <div class="nav-item">
+            <i class="fa-solid fa-message"></i>
             <span>Inbox</span>
         </div>
         <div class="nav-item" onclick="abrirModal()">
-            <i class="fa-regular fa-user"></i>
+            <i class="fa-solid fa-user"></i>
             <span>Perfil</span>
         </div>
     </nav>
 
     <div id="signup-modal" class="modal-overlay">
         <div class="modal-card">
-            <button class="close-modal" onclick="fecharModal()">&times;</button>
-            <div class="modal-glitch-header" data-text="RESTRICTED">RESTRICTED</div>
-            <p class="modal-sub">Este conteúdo é exclusivo para membros.</p>
+            <button class="close-btn" onclick="fecharModal()">&times;</button>
+            <div class="modal-header">
+                <div class="live-badge">12.4k ONLINE</div>
+                <h2>RESTRICTED <span class="neon-text">ACCESS</span></h2>
+                <p>Conteúdo exclusivo para maiores de 18 anos.</p>
+            </div>
             
             <form onsubmit="registrarUsuario(event)">
-                <div class="cyber-input">
+                <div class="input-box">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="email" placeholder="Seu melhor e-mail" required>
+                    <input type="email" id="email" placeholder="E-mail Privado" required>
                 </div>
-                <div class="cyber-input">
-                    <i class="fa-solid fa-key"></i>
-                    <input type="password" id="password" placeholder="Senha segura" required>
+                <div class="input-box">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Senha Forte" required>
                 </div>
-                <button type="submit" class="cta-button">
-                    DESBLOQUEAR TUDO <i class="fa-solid fa-unlock"></i>
+                <button type="submit" class="cta-btn">
+                    LIBERAR AGORA <i class="fa-solid fa-unlock"></i>
                 </button>
             </form>
             
-            <div class="social-proof">
-                <div class="avatars">
-                    <span></span><span></span><span></span>
-                </div>
-                <p>+128 pessoas entraram hoje.</p>
+            <div class="modal-footer">
+                <p>Já é membro? <a href="#">Login</a></p>
+                <div class="secure-icon"><i class="fa-solid fa-shield-halved"></i> SSL Secured</div>
             </div>
         </div>
     </div>

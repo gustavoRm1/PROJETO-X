@@ -1,257 +1,98 @@
-/* === AXTRON CORE ENGINE - API CONECTADA === */
+/* JS DEFINITIVO - AXTRON HOME */
 
-const AppState = {
-    user: JSON.parse(localStorage.getItem('axtron_user')) || null,
-    token: localStorage.getItem('axtron_token') || null,
-    videos: []
-};
+// Dados de Exemplo (Enquanto API não conecta)
+const MOCK_DATA = [
+    { id: 1, user: "@safira_vip", desc: "O que acontece no cofre fica no cofre... 🤫", likes: "14K", comments: "302", src: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4", music: "Original Sound - Safira" },
+    { id: 2, user: "@aninha_leaks", desc: "Video completo liberado para membros!", likes: "5K", comments: "120", src: "https://assets.mixkit.co/videos/preview/mixkit-woman-dancing-under-neon-lights-1282-large.mp4", music: "Funk Proibidão 2026" },
+];
 
 document.addEventListener('DOMContentLoaded', () => {
-    initApp();
+    carregarFeed();
 });
 
-async function initApp() {
-    await loadFeed(); // Busca dados reais do banco
-    renderVault();    // Renderiza a aba Vault
-    checkLoginState(); // Ajusta UI baseada no login
-}
+function carregarFeed() {
+    const feedContainer = document.getElementById('feed-view');
+    feedContainer.innerHTML = ''; // Limpa o loader
 
-// 1. BUSCA O FEED NO BACKEND
-async function loadFeed() {
-    const feedView = document.getElementById('feed-view');
-    feedView.innerHTML = '<div class="loading"><i class="fa-solid fa-circle-notch fa-spin"></i> Carregando Feed...</div>';
-
-    try {
-        // Bate na API que criamos no Docker
-        const response = await fetch('/posts', {
-            headers: {
-                'Authorization': AppState.token ? `Bearer ${AppState.token}` : ''
-            }
-        });
-
-        if (!response.ok) throw new Error('Erro na API');
-        
-        const data = await response.json();
-        AppState.videos = data; // Salva na memória
-        renderFeed(data);
-        setupIntersectionObserver(); // Liga o Autoplay APÓS carregar os vídeos
-
-    } catch (error) {
-        console.error(error);
-        feedView.innerHTML = '<div class="error-msg"><p>Erro ao carregar vídeos.</p><button onclick="loadFeed()">Tentar Novamente</button></div>';
-    }
-}
-
-// 2. RENDERIZA O FEED (TikTok Style)
-function renderFeed(videos) {
-    const feed = document.getElementById('feed-view');
-    feed.innerHTML = ''; 
-
-    if (videos.length === 0) {
-        feed.innerHTML = '<div class="empty-feed"><h3>Nenhum vídeo ainda 😢</h3></div>';
-        return;
-    }
-
-    videos.forEach(vid => {
-        // Lógica VIP Real:
-        // Se é PREMIUM e o usuário NÃO está logado => Bloqueia
-        const isLocked = vid.is_premium && !AppState.token;
-        
-        // Tratamento da URL do vídeo (se veio do upload ou link externo)
-        let videoSrcUrl = vid.video_url;
-        if (!videoSrcUrl.startsWith('http')) {
-            videoSrcUrl = `/uploads/${videoSrcUrl}`;
-        }
-
-        const videoTag = isLocked 
-            ? '' // Não coloca o src para não gastar dados se estiver bloqueado
-            : `src="${videoSrcUrl}" loop muted playsinline`;
-
-        const vipClass = isLocked ? 'vip-blur' : '';
-        
-        // Overlay de Bloqueio
-        const vipOverlay = isLocked 
-            ? `<div class="locked-overlay" onclick="abrirModal()">
-                 <i class="fa-solid fa-lock fa-3x"></i>
-                 <p>CONTEÚDO VIP</p>
-                 <button class="unlock-btn">DESBLOQUEAR</button>
-               </div>` 
-            : '';
-
-        // Formatação dos números (fake stats baseados no ID para parecer real por enquanto)
-        const likes = vid.views ? (vid.views / 10).toFixed(0) : '0';
-        
-        const avatar = vid.avatar || 'https://via.placeholder.com/80/111/fff?text=U';
+    MOCK_DATA.forEach(video => {
+        // Cria a estrutura HTML completa para cada vídeo
         const html = `
-            <div class="video-item ${vipClass}" data-id="${vid.id}">
-                ${vipOverlay}
-                <video class="video-player" ${videoTag}></video>
+            <div class="video-item">
+                <video class="video-player" src="${video.src}" loop playsinline onclick="togglePlay(this)"></video>
+                
                 <div class="video-gradient"></div>
 
                 <div class="video-info">
-                    <h3 class="username">@${vid.username || 'usuario_vip'} ${vid.is_premium ? '<i class="fa-solid fa-circle-check"></i>' : ''}</h3>
-                    <p class="description">${vid.title}</p>
-                    <div class="music-ticker">
-                        <i class="fa-solid fa-music"></i> <span>${vid.audio || 'Som Original - Axtron'}</span>
-                    </div>
+                    <div class="username">${video.user} <i class="fa-solid fa-circle-check" style="color: #00ff88; font-size:12px;"></i></div>
+                    <div class="desc">${video.desc}</div>
+                    <div class="music-tag"><i class="fa-solid fa-music"></i> ${video.music}</div>
                 </div>
 
-                <div class="video-actions">
-                    <div class="action-btn profile-btn">
-                        <img src="${avatar}" alt="User">
-                        <i class="fa-solid fa-plus add-icon"></i>
+                <div class="sidebar-actions">
+                    <div class="avatar-wrapper" onclick="abrirModal()">
+                        <img src="https://ui-avatars.com/api/?name=${video.user}&background=random" alt="User">
+                        <div class="plus-badge"><i class="fa-solid fa-plus"></i></div>
                     </div>
-                    <div class="action-btn" onclick="toggleLike(this)">
+
+                    <div class="action-btn" onclick="animarLike(this)">
                         <i class="fa-solid fa-heart"></i>
-                        <span class="count">${likes}</span>
+                        <span>${video.likes}</span>
                     </div>
+
                     <div class="action-btn">
                         <i class="fa-solid fa-comment-dots"></i>
-                        <span class="count">${(Math.random() * 100).toFixed(0)}</span>
+                        <span>${video.comments}</span>
                     </div>
-                    <div class="action-btn vip-btn" onclick="abrirModal()">
-                        <i class="fa-solid fa-lock"></i>
-                        <span class="label">UNLOCK</span>
-                    </div>
-                    <div class="action-btn" onclick="compartilhar('${vid.title}')">
+
+                    <div class="action-btn" onclick="abrirModal()">
                         <i class="fa-solid fa-share"></i>
-                        <span class="count">Share</span>
+                        <span>Share</span>
                     </div>
                 </div>
             </div>
         `;
-        feed.innerHTML += html;
+        feedContainer.innerHTML += html;
     });
+
+    // Ativa o Autoplay Inteligente
+    iniciarObserver();
 }
 
-// 3. AUTOPLAY INTELIGENTE (Engenharia Musk)
-function setupIntersectionObserver() {
-    const options = { root: null, threshold: 0.6 }; 
-    
+// Autoplay: Toca apenas o vídeo visível
+function iniciarObserver() {
+    const options = { threshold: 0.6 }; // 60% visível para tocar
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target.querySelector('video');
-            
-            // Se não tem video (ex: card bloqueado sem src), ignora
-            if (!video || !video.hasAttribute('src')) return;
-
-            if (entry.isIntersecting && !entry.target.classList.contains('vip-blur')) {
-                // Tenta tocar
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(_ => {
-                        // Play automático funcionou
-                        video.muted = false; // Tenta desmutar (alguns browsers bloqueiam)
-                    }).catch(error => {
-                        // Autoplay bloqueado pelo browser
-                        video.muted = true;
-                        video.play();
-                    });
-                }
+            if(entry.isIntersecting) {
+                video.play();
             } else {
-                video.pause(); 
-                video.currentTime = 0; 
+                video.pause();
+                video.currentTime = 0; // Reseta para economizar bateria
             }
         });
     }, options);
 
-    document.querySelectorAll('.video-container').forEach(el => observer.observe(el));
+    document.querySelectorAll('.video-item').forEach(el => observer.observe(el));
 }
 
-// 4. SISTEMA DE ABAS
-function switchTab(tabName) {
-    document.getElementById('feed-view').style.display = 'none';
-    document.getElementById('vault-view').style.display = 'none';
-    
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-    if (tabName === 'feed') {
-        document.getElementById('feed-view').style.display = 'block';
-        // Recalcular autoplay quando volta pra aba
-        setupIntersectionObserver();
-    } else if (tabName === 'vault') {
-        document.getElementById('vault-view').style.display = 'block';
-    }
-    
-    // Marca o botão ativo (lógica simples baseada na ordem)
-    const index = tabName === 'feed' ? 0 : 1;
-    const navItems = document.querySelectorAll('.nav-item');
-    if(navItems[index]) navItems[index].classList.add('active');
-}
-
-// 5. RENDERIZA O VAULT (Placeholder para futuro)
-function renderVault() {
-    const grid = document.getElementById('vault-grid');
-    if(!grid) return;
-    grid.innerHTML = '';
-    // Mock visual apenas para preencher espaço
-    for(let i=0; i<6; i++) {
-        grid.innerHTML += `
-            <div class="grid-item" onclick="abrirModal()">
-                <div class="locked-overlay">
-                    <i class="fa-solid fa-lock"></i>
-                </div>
-                <img src="https://via.placeholder.com/300x500/111/333?text=VIP+${i+1}" alt="VIP">
-            </div>
-        `;
-    }
-}
-
-// 6. UI HELPERS
-function abrirModal() { 
-    const modal = document.getElementById('signup-modal') || document.getElementById('loginModal');
-    if(modal) modal.style.display = 'flex'; 
-    else alert('Faça login para continuar');
-}
-
-function fecharModal() { 
-    const modal = document.getElementById('signup-modal') || document.getElementById('loginModal');
-    if(modal) modal.style.display = 'none'; 
-}
-
-function checkLoginState() {
-    // Se o user estiver logado, pode esconder botões de login ou mudar o header
-    if (AppState.token) {
-        console.log("Usuário logado: Modo VIP Ativo");
-    }
+// Micro-interações
+function togglePlay(video) {
+    if(video.paused) video.play();
+    else video.pause();
 }
 
 function animarLike(btn) {
     const icon = btn.querySelector('i');
-    if (icon.style.color === 'rgb(255, 0, 80)') {
+    if (icon.style.color === 'rgb(255, 0, 85)') {
         icon.style.color = 'white';
     } else {
-        icon.style.color = '#ff0050';
+        icon.style.color = '#ff0055';
         icon.style.transform = 'scale(1.3)';
         setTimeout(() => icon.style.transform = 'scale(1)', 200);
     }
 }
 
-function toggleLike(element) {
-    const icon = element.querySelector('i');
-    const count = element.querySelector('.count');
-    if (icon.classList.contains('active-like')) {
-        icon.classList.remove('active-like');
-        icon.style.color = 'white';
-        // TODO: opcional diminuir contador
-    } else {
-        icon.classList.add('active-like');
-        icon.style.color = '#ff0044';
-        icon.style.transform = 'scale(1.4)';
-        setTimeout(() => { icon.style.transform = 'scale(1)'; }, 200);
-        if (navigator.vibrate) navigator.vibrate(50);
-        // TODO: opcional incrementar contador usando count
-    }
-}
-
-function compartilhar(title) {
-    if (navigator.share) {
-        navigator.share({
-            title: 'Axtron VIP',
-            text: `Assista ${title} no Axtron!`,
-            url: window.location.href
-        });
-    } else {
-        alert('Link copiado!');
-    }
-}
+// Modal Control
+function abrirModal() { document.getElementById('signup-modal').style.display = 'flex'; }
+function fecharModal() { document.getElementById('signup-modal').style.display = 'none'; }
