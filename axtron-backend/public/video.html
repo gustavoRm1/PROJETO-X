@@ -41,9 +41,9 @@
             <div class="video-info-area">
                 <h1 id="videoTitle">Carregando título...</h1>
                 <div class="video-stats-row">
-                    <span style="color:#aaa;">1.2M Visualizações • Há 2 horas</span>
+                    <span style="color:#aaa;" id="videoStats">0 Visualizações • Agora</span>
                     <div class="action-buttons">
-                        <button class="action-btn" onclick="videoApp.actions.like(this)"><i class="ph ph-thumbs-up"></i> <span class="count">12k</span></button>
+                        <button class="action-btn" id="likeBtn" onclick="videoApp.actions.like(this)"><i class="ph ph-thumbs-up"></i> <span class="count" id="likeCount">0</span></button>
                         <button class="action-btn" onclick="videoApp.actions.share()"><i class="ph ph-share-fat"></i> Compartilhar</button>
                         <button class="action-btn highlight" onclick="window.location.href='profile.html'"><i class="ph ph-currency-dollar"></i> Apoiar</button>
                     </div>
@@ -51,7 +51,7 @@
                 <div class="channel-row">
                     <img src="https://placehold.co/100x100/ff0055/fff?text=K" class="channel-avatar">
                     <div class="channel-info">
-                        <h4>Key Alves Oficial <i class="ph ph-seal-check-fill verified-icon"></i></h4>
+                        <h4 id="channelName">Criador <i class="ph ph-seal-check-fill verified-icon"></i></h4>
                         <span>125k Seguidores</span>
                     </div>
                     <button class="btn-subscribe">SEGUIR</button>
