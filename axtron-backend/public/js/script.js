@@ -81,30 +81,41 @@ function renderFeed(videos) {
         // Formatação dos números (fake stats baseados no ID para parecer real por enquanto)
         const likes = vid.views ? (vid.views / 10).toFixed(0) : '0';
         
+        const avatar = vid.avatar || 'https://via.placeholder.com/80/111/fff?text=U';
         const html = `
-            <div class="video-container ${vipClass}" data-id="${vid.id}">
+            <div class="video-item ${vipClass}" data-id="${vid.id}">
                 ${vipOverlay}
                 <video class="video-player" ${videoTag}></video>
-                
-                <div class="actions-sidebar">
-                    <div class="action-btn" onclick="animarLike(this)">
-                        <i class="fa-solid fa-heart"></i>
-                        <span>${likes}</span>
-                    </div>
-                    <div class="action-btn">
-                        <i class="fa-solid fa-comment-dots"></i>
-                        <span>${(Math.random() * 100).toFixed(0)}</span>
-                    </div>
-                    <div class="action-btn" onclick="compartilhar('${vid.title}')">
-                        <i class="fa-solid fa-share"></i>
-                        <span>Share</span>
+                <div class="video-gradient"></div>
+
+                <div class="video-info">
+                    <h3 class="username">@${vid.username || 'usuario_vip'} ${vid.is_premium ? '<i class="fa-solid fa-circle-check"></i>' : ''}</h3>
+                    <p class="description">${vid.title}</p>
+                    <div class="music-ticker">
+                        <i class="fa-solid fa-music"></i> <span>${vid.audio || 'Som Original - Axtron'}</span>
                     </div>
                 </div>
 
-                <div class="video-ui">
-                    <div class="video-info">
-                        <div class="username">@${vid.username || 'usuario_vip'} ${vid.is_premium ? '<i class="fa-solid fa-circle-check" style="color:#00ff88"></i>' : ''}</div>
-                        <div class="description">${vid.title}</div>
+                <div class="video-actions">
+                    <div class="action-btn profile-btn">
+                        <img src="${avatar}" alt="User">
+                        <i class="fa-solid fa-plus add-icon"></i>
+                    </div>
+                    <div class="action-btn" onclick="toggleLike(this)">
+                        <i class="fa-solid fa-heart"></i>
+                        <span class="count">${likes}</span>
+                    </div>
+                    <div class="action-btn">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        <span class="count">${(Math.random() * 100).toFixed(0)}</span>
+                    </div>
+                    <div class="action-btn vip-btn" onclick="abrirModal()">
+                        <i class="fa-solid fa-lock"></i>
+                        <span class="label">UNLOCK</span>
+                    </div>
+                    <div class="action-btn" onclick="compartilhar('${vid.title}')">
+                        <i class="fa-solid fa-share"></i>
+                        <span class="count">Share</span>
                     </div>
                 </div>
             </div>
@@ -213,6 +224,23 @@ function animarLike(btn) {
         icon.style.color = '#ff0050';
         icon.style.transform = 'scale(1.3)';
         setTimeout(() => icon.style.transform = 'scale(1)', 200);
+    }
+}
+
+function toggleLike(element) {
+    const icon = element.querySelector('i');
+    const count = element.querySelector('.count');
+    if (icon.classList.contains('active-like')) {
+        icon.classList.remove('active-like');
+        icon.style.color = 'white';
+        // TODO: opcional diminuir contador
+    } else {
+        icon.classList.add('active-like');
+        icon.style.color = '#ff0044';
+        icon.style.transform = 'scale(1.4)';
+        setTimeout(() => { icon.style.transform = 'scale(1)'; }, 200);
+        if (navigator.vibrate) navigator.vibrate(50);
+        // TODO: opcional incrementar contador usando count
     }
 }
 

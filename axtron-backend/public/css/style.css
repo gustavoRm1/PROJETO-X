@@ -20,39 +20,97 @@ body { background: var(--bg); color: white; font-family: -apple-system, BlinkMac
 .tabs-control { font-weight: 600; font-size: 1rem; color: #888; }
 .tabs-control .active-tab { color: white; border-bottom: 2px solid white; padding-bottom: 3px; margin-right: 15px; }
 
-/* === FEED COM SCROLL SNAP (O segredo do TikTok) === */
+/* O Palco Principal */
 #feed-view {
-    height: 100vh;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory;
-    scroll-behavior: smooth;
+    height: 100vh; /* Altura exata da tela */
+    width: 100vw;
+    overflow-y: scroll; /* Permite rolar */
+    scroll-snap-type: y mandatory; /* O Imã */
+    background-color: #000;
+    scrollbar-width: none; /* Esconde barra de rolagem (Firefox) */
 }
+#feed-view::-webkit-scrollbar { display: none; /* Esconde barra (Chrome/Safari) */ }
 
-/* Cada Vídeo Ocupa 100% da Tela */
-.video-container {
+/* O Vídeo Individual */
+.video-item {
     position: relative;
     width: 100%;
-    height: 100vh; /* Tela cheia */
-    scroll-snap-align: start; /* O imã */
+    height: 100vh; /* Ocupa 100% da tela sempre */
+    scroll-snap-align: start; /* Ponto de parada do imã */
     background: #111;
     overflow: hidden;
 }
 
+/* O Vídeo em si */
 .video-player {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cobre a tela sem distorcer (zoom no centro) */
+    z-index: 0;
 }
 
-/* Interface Sobre o Vídeo (Overlay) */
-.video-ui {
-    position: absolute; bottom: 60px; left: 0; width: 100%;
-    padding: 20px;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    pointer-events: none; /* Deixa clicar no vídeo */
+/* A Névoa de Leitura (Gradiente) */
+.video-gradient {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%; height: 50%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
+    pointer-events: none; /* Deixa o clique passar para o vídeo */
+    z-index: 1;
 }
 
-.video-info { margin-bottom: 15px; width: 80%; pointer-events: auto; }
-.username { font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; text-shadow: 1px 1px 2px black; }
-.description { font-size: 0.9rem; color: #ddd; line-height: 1.3; text-shadow: 1px 1px 2px black; }
+/* Posicionamento das Ações (Direita) */
+.video-actions {
+    position: absolute;
+    right: 10px;
+    bottom: 100px; /* Acima da Bottom Bar */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    z-index: 3;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+.action-btn i {
+    font-size: 30px; /* Tamanho grande para o dedo */
+    margin-bottom: 5px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.action-btn:active i { transform: scale(0.8); } /* Feedback de toque */
+
+.count { font-size: 12px; font-weight: 600; }
+
+/* Botão de Perfil com + */
+.profile-btn { position: relative; margin-bottom: 10px; }
+.profile-btn img {
+    width: 45px; height: 45px; border-radius: 50%; border: 2px solid white;
+}
+.add-icon {
+    position: absolute; bottom: -5px; left: 15px;
+    font-size: 14px !important;
+    background: #ff0044; color: white; border-radius: 50%; padding: 2px;
+}
+
+/* Informações (Esquerda) */
+.video-info {
+    position: absolute;
+    left: 15px;
+    bottom: 90px;
+    width: 70%;
+    z-index: 2;
+    color: white;
+}
+.username { font-size: 16px; font-weight: 700; margin-bottom: 5px; }
+.description { font-size: 14px; opacity: 0.9; line-height: 1.3; }
 
 /* Barra Lateral de Ações */
 .actions-sidebar {
