@@ -1,96 +1,142 @@
-/* JS DEFINITIVO - AXTRON HOME */
+/* AXTRON TUBE ENGINE */
 
-// Dados de Exemplo (Enquanto API não conecta)
-const MOCK_DATA = [
-    { id: 1, user: "@safira_vip", desc: "O que acontece no cofre fica no cofre... 🤫", likes: "14K", comments: "302", src: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4", music: "Original Sound - Safira" },
-    { id: 2, user: "@aninha_leaks", desc: "Video completo liberado para membros!", likes: "5K", comments: "120", src: "https://assets.mixkit.co/videos/preview/mixkit-woman-dancing-under-neon-lights-1282-large.mp4", music: "Funk Proibidão 2026" },
+// Dados Simulados (Padrão Tube)
+const MOCK_VIDEOS = [
+    { 
+        id: 1, 
+        title: "Vazou no Privacy: Safira Hot mostrando tudo na piscina 😈", 
+        thumb: "https://via.placeholder.com/640x360/111/00ff88?text=THUMB+1", // Substitua por URL real
+        preview: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4",
+        duration: "12:40", 
+        quality: "4K", 
+        views: "1.2M", 
+        time: "2 dias atrás", 
+        uploader: "Safira Hot",
+        avatar: "https://ui-avatars.com/api/?name=Safira&background=random"
+    },
+    { 
+        id: 2, 
+        title: "Amador BR: Novinha se exibindo na webcam (Completo)", 
+        thumb: "https://via.placeholder.com/640x360/111/ff0044?text=THUMB+2", 
+        preview: "https://assets.mixkit.co/videos/preview/mixkit-woman-dancing-under-neon-lights-1282-large.mp4",
+        duration: "08:15", 
+        quality: "HD", 
+        views: "850K", 
+        time: "5 horas atrás", 
+        uploader: "AnonX",
+        avatar: "https://ui-avatars.com/api/?name=Anon&background=000&color=fff"
+    },
+    { 
+        id: 3, 
+        title: "Compilado melhores momentos da semana (VIP)", 
+        thumb: "https://via.placeholder.com/640x360/111/00b7ff?text=THUMB+3", 
+        preview: "https://assets.mixkit.co/videos/preview/mixkit-red-lights-in-dark-room-1233-large.mp4",
+        duration: "22:00", 
+        quality: "1080p", 
+        views: "3.4M", 
+        time: "1 semana atrás", 
+        uploader: "AxtronOfficial",
+        avatar: "https://ui-avatars.com/api/?name=Ax&background=00ff88&color=000"
+    }
 ];
 
+// Gera mais dados fake para encher a tela
+for(let i=0; i<5; i++) MOCK_VIDEOS.push(...MOCK_VIDEOS); 
+
 document.addEventListener('DOMContentLoaded', () => {
-    carregarFeed();
+    renderTubeFeed();
 });
 
-function carregarFeed() {
-    const feedContainer = document.getElementById('feed-view');
-    feedContainer.innerHTML = ''; // Limpa o loader
+function renderTubeFeed() {
+    const container = document.getElementById('tube-feed');
+    container.innerHTML = ''; // Limpa loader
 
-    MOCK_DATA.forEach(video => {
-        // Cria a estrutura HTML completa para cada vídeo
+    MOCK_VIDEOS.forEach((vid, index) => {
+        // ID único para controle de preview
+        const uniqueID = `vid-${index}`;
+        
         const html = `
-            <div class="video-item">
-                <video class="video-player" src="${video.src}" loop playsinline onclick="togglePlay(this)"></video>
+            <article class="video-card" onclick="irParaVideo('${vid.id}')">
+                <div class="thumb-container" id="${uniqueID}">
+                    <img src="${vid.thumb}" class="poster-img" alt="Thumbnail">
+                    
+                    <video src="${vid.preview}" class="preview-video" muted loop playsinline></video>
+                    
+                    <span class="duration">${vid.duration}</span>
+                    <span class="quality-badge">${vid.quality}</span>
+                </div>
                 
-                <div class="video-gradient"></div>
-
-                <div class="video-info">
-                    <div class="username">${video.user} <i class="fa-solid fa-circle-check" style="color: #00ff88; font-size:12px;"></i></div>
-                    <div class="desc">${video.desc}</div>
-                    <div class="music-tag"><i class="fa-solid fa-music"></i> ${video.music}</div>
-                </div>
-
-                <div class="sidebar-actions">
-                    <div class="avatar-wrapper" onclick="abrirModal()">
-                        <img src="https://ui-avatars.com/api/?name=${video.user}&background=random" alt="User">
-                        <div class="plus-badge"><i class="fa-solid fa-plus"></i></div>
+                <div class="video-meta">
+                    <div class="uploader-pic">
+                        <img src="${vid.avatar}" alt="${vid.uploader}">
                     </div>
-
-                    <div class="action-btn" onclick="animarLike(this)">
-                        <i class="fa-solid fa-heart"></i>
-                        <span>${video.likes}</span>
+                    <div class="info-text">
+                        <h3 class="video-title">${vid.title}</h3>
+                        <div class="stats">
+                            <span>${vid.uploader}</span>
+                            <span class="dot">•</span>
+                            <span>${vid.views} views</span>
+                            <span class="dot">•</span>
+                            <span>${vid.time}</span>
+                        </div>
                     </div>
-
-                    <div class="action-btn">
-                        <i class="fa-solid fa-comment-dots"></i>
-                        <span>${video.comments}</span>
-                    </div>
-
-                    <div class="action-btn" onclick="abrirModal()">
-                        <i class="fa-solid fa-share"></i>
-                        <span>Share</span>
+                    <div class="action-dots">
+                        <i class="fa-solid fa-ellipsis-vertical" style="color:#555"></i>
                     </div>
                 </div>
-            </div>
+            </article>
         `;
-        feedContainer.innerHTML += html;
+        container.innerHTML += html;
     });
 
-    // Ativa o Autoplay Inteligente
-    iniciarObserver();
+    initSmartPreviews();
 }
 
-// Autoplay: Toca apenas o vídeo visível
-function iniciarObserver() {
-    const options = { threshold: 0.6 }; // 60% visível para tocar
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const video = entry.target.querySelector('video');
-            if(entry.isIntersecting) {
+// LÓGICA DE PREVIEW INTELIGENTE (Padrão Pornhub/Xvideos Mobile)
+function initSmartPreviews() {
+    // Desktop: Hover (Mouse)
+    if (window.matchMedia("(min-width: 768px)").matches) {
+        document.querySelectorAll('.thumb-container').forEach(card => {
+            const video = card.querySelector('video');
+            card.addEventListener('mouseenter', () => {
+                card.classList.add('playing');
                 video.play();
-            } else {
+            });
+            card.addEventListener('mouseleave', () => {
+                card.classList.remove('playing');
                 video.pause();
-                video.currentTime = 0; // Reseta para economizar bateria
-            }
+                video.currentTime = 0;
+            });
         });
-    }, options);
+    } 
+    // Mobile: Intersection Observer (Scroll)
+    else {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const card = entry.target;
+                const video = card.querySelector('video');
+                
+                if (entry.isIntersecting) {
+                    // Está no centro da tela? Toca.
+                    card.classList.add('playing');
+                    video.play().catch(() => {}); // Catch evita erros de autoplay
+                } else {
+                    // Saiu da tela? Para.
+                    card.classList.remove('playing');
+                    video.pause();
+                }
+            });
+        }, { threshold: 0.7 }); // 70% visível para ativar
 
-    document.querySelectorAll('.video-item').forEach(el => observer.observe(el));
-}
-
-// Micro-interações
-function togglePlay(video) {
-    if(video.paused) video.play();
-    else video.pause();
-}
-
-function animarLike(btn) {
-    const icon = btn.querySelector('i');
-    if (icon.style.color === 'rgb(255, 0, 85)') {
-        icon.style.color = 'white';
-    } else {
-        icon.style.color = '#ff0055';
-        icon.style.transform = 'scale(1.3)';
-        setTimeout(() => icon.style.transform = 'scale(1)', 200);
+        document.querySelectorAll('.thumb-container').forEach(el => observer.observe(el));
     }
+}
+
+// Navegação
+function irParaVideo(id) {
+    // Aqui você redirecionaria para video.html?id=...
+    console.log("Abrindo vídeo ID:", id);
+    alert("Indo para o player do vídeo " + id);
 }
 
 // Modal Control

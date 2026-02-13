@@ -2,37 +2,45 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AXTRON | Premium Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AXTRON | The Social Tube</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/config.js"></script> 
+    <script src="js/config.js"></script>
 </head>
 <body>
 
-    <header class="top-bar">
-        <div class="logo-area">
-            AXTRON <span class="dot">.</span>
+    <header class="tube-header">
+        <div class="header-left">
+            <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
+            <div class="logo">AXTRON<span class="badge-pro">PRO</span></div>
         </div>
-        <div class="tabs">
-            <span class="tab active">Feed</span>
-            <span class="tab">Seguindo</span>
-        </div>
-        <div class="search-btn">
-            <i class="fa-solid fa-magnifying-glass"></i>
+        <div class="header-right">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <div class="user-avatar" onclick="abrirModal()">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <button class="upload-btn" onclick="abrirModal()">UPLOAD</button>
         </div>
     </header>
 
-    <main id="app-view">
-        <section id="feed-view">
-            <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Carregando Feed...</p>
-            </div>
-            </section>
+    <div class="categories-bar">
+        <span class="cat-pill active">Recomendados</span>
+        <span class="cat-pill">Vazados BR</span>
+        <span class="cat-pill">Amador</span>
+        <span class="cat-pill">POV</span>
+        <span class="cat-pill">Verified <i class="fa-solid fa-circle-check"></i></span>
+        <span class="cat-pill">Hentai</span>
+    </div>
+
+    <main id="tube-feed">
+        <div class="loading-grid">
+            <div class="spinner"></div>
+            <p>Carregando Miniaturas...</p>
+        </div>
     </main>
 
     <nav class="bottom-nav">
@@ -41,19 +49,16 @@
             <span>Home</span>
         </div>
         <div class="nav-item">
-            <i class="fa-solid fa-compass"></i>
-            <span>Discover</span>
-        </div>
-        <div class="nav-item center-add" onclick="abrirModal()">
-            <div class="plus-btn"><i class="fa-solid fa-plus"></i></div>
+            <i class="fa-solid fa-fire"></i>
+            <span>Hot</span>
         </div>
         <div class="nav-item">
-            <i class="fa-solid fa-message"></i>
-            <span>Inbox</span>
+            <i class="fa-solid fa-layer-group"></i>
+            <span>Subs</span>
         </div>
         <div class="nav-item" onclick="abrirModal()">
-            <i class="fa-solid fa-user"></i>
-            <span>Perfil</span>
+            <i class="fa-solid fa-folder-open"></i>
+            <span>Library</span>
         </div>
     </nav>
 
@@ -61,28 +66,20 @@
         <div class="modal-card">
             <button class="close-btn" onclick="fecharModal()">&times;</button>
             <div class="modal-header">
-                <div class="live-badge">12.4k ONLINE</div>
-                <h2>RESTRICTED <span class="neon-text">ACCESS</span></h2>
-                <p>Conteúdo exclusivo para maiores de 18 anos.</p>
+                <h2>JOIN THE <span class="neon-text">COMMUNITY</span></h2>
+                <p>Crie playlists, siga criadores e veja em 4K.</p>
             </div>
-            
             <form onsubmit="registrarUsuario(event)">
                 <div class="input-box">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="email" placeholder="E-mail Privado" required>
+                    <input type="email" id="email" placeholder="E-mail" required>
                 </div>
                 <div class="input-box">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="password" placeholder="Senha Forte" required>
+                    <input type="password" id="password" placeholder="Senha" required>
                 </div>
-                <button type="submit" class="cta-btn">
-                    LIBERAR AGORA <i class="fa-solid fa-unlock"></i>
-                </button>
+                <button type="submit" class="cta-btn">CRIAR CONTA GRÁTIS</button>
             </form>
-            
             <div class="modal-footer">
-                <p>Já é membro? <a href="#">Login</a></p>
-                <div class="secure-icon"><i class="fa-solid fa-shield-halved"></i> SSL Secured</div>
+                <p>Ao entrar, você confirma ter 18+ anos.</p>
             </div>
         </div>
     </div>

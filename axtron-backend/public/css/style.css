@@ -1,122 +1,151 @@
-/* === 1. BASE & RESET === */
+/* === 1. BASE === */
 :root {
-    --primary: #00ff88;
-    --bg: #000000;
-    --glass: rgba(255, 255, 255, 0.1);
+    --primary: #00ff88; /* Axtron Green */
+    --bg: #0f0f0f;      /* Fundo Tube Escuro */
+    --card: #1f1f1f;    /* Cor do Cartão */
+    --text: #ffffff;
+    --text-sec: #aaaaaa;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background-color: var(--bg); color: white; overflow: hidden; height: 100vh; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; }
 
-/* === 2. TOP BAR (Transparente) === */
-.top-bar {
-    position: fixed; top: 0; left: 0; width: 100%; z-index: 10;
+/* === 2. HEADER === */
+.tube-header {
+    position: sticky; top: 0; z-index: 100;
+    background: #181818;
+    padding: 12px 15px;
     display: flex; justify-content: space-between; align-items: center;
-    padding: 15px 20px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-}
-.logo-area { font-weight: 900; letter-spacing: -1px; }
-.dot { color: var(--primary); }
-.tabs { font-size: 1rem; font-weight: 600; color: #888; }
-.tabs .active { color: white; border-bottom: 2px solid white; margin-right: 15px; padding-bottom: 3px; }
-
-/* === 3. FEED PRINCIPAL (O IMÃ) === */
-#feed-view {
-    height: 100vh;
-    width: 100vw;
-    overflow-y: scroll;
-    scroll-snap-type: y mandatory; /* OBRIGATÓRIO PARA TIKTOK FEEL */
-    scroll-behavior: smooth;
+    border-bottom: 1px solid #333;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-/* O Container de cada Vídeo */
-.video-item {
+.header-left { display: flex; align-items: center; gap: 15px; }
+.menu-btn { font-size: 1.2rem; cursor: pointer; }
+
+.logo { font-weight: 900; font-size: 1.3rem; letter-spacing: -1px; }
+.badge-pro { 
+    background: var(--primary); color: black; 
+    font-size: 0.6rem; padding: 2px 4px; border-radius: 4px; 
+    margin-left: 3px; vertical-align: top;
+}
+
+.header-right { display: flex; align-items: center; gap: 15px; }
+.search-icon { font-size: 1.2rem; color: var(--text-sec); }
+.upload-btn {
+    background: transparent; border: 1px solid var(--primary); color: var(--primary);
+    padding: 6px 12px; font-weight: bold; font-size: 0.8rem; border-radius: 4px;
+    display: none; /* Esconde no mobile */
+}
+@media (min-width: 600px) { .upload-btn { display: block; } }
+
+/* === 3. CATEGORIAS === */
+.categories-bar {
+    display: flex; gap: 10px; overflow-x: auto; padding: 15px;
+    background: var(--bg);
+    scrollbar-width: none;
+}
+.categories-bar::-webkit-scrollbar { display: none; }
+
+.cat-pill {
+    background: #2a2a2a; color: white; padding: 6px 15px; 
+    border-radius: 20px; font-size: 0.85rem; white-space: nowrap; font-weight: 500;
+    border: 1px solid #333; transition: 0.2s;
+}
+.cat-pill.active { background: white; color: black; font-weight: 700; border-color: white; }
+
+/* === 4. GRID DE VÍDEOS (TUBE STYLE) === */
+#tube-feed {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile: 1 coluna */
+    gap: 20px;
+    padding: 10px 0;
+}
+@media (min-width: 600px) {
+    #tube-feed { grid-template-columns: 1fr 1fr; padding: 15px; gap: 15px; } /* Tablet: 2 colunas */
+}
+
+/* O CARTÃO DE VÍDEO */
+.video-card {
+    background: transparent;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.video-card:hover { transform: translateY(-2px); }
+
+/* Área da Thumbnail */
+.thumb-container {
     position: relative;
     width: 100%;
-    height: 100vh;
-    scroll-snap-align: start; /* Ponto de parada */
-    background: #111;
+    aspect-ratio: 16/9; /* Padrão Widescreen */
+    background: #000;
     overflow: hidden;
+    border-radius: 0; /* Mobile costuma ser full width */
+}
+@media (min-width: 600px) { .thumb-container { border-radius: 8px; } }
+
+.poster-img { width: 100%; height: 100%; object-fit: cover; }
+.preview-video {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0; transition: opacity 0.3s;
+}
+/* Quando ativo (hover/scroll), mostra o vídeo */
+.thumb-container.playing .preview-video { opacity: 1; }
+.thumb-container.playing .poster-img { opacity: 0; }
+
+/* Badges sobre a Imagem */
+.duration {
+    position: absolute; bottom: 8px; right: 8px;
+    background: rgba(0,0,0,0.8); color: white;
+    padding: 2px 6px; font-size: 0.75rem; border-radius: 4px; font-weight: bold;
+    z-index: 2;
+}
+.quality-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--primary); color: black;
+    padding: 2px 4px; font-size: 0.7rem; border-radius: 2px; font-weight: 900;
+    z-index: 2;
 }
 
-/* O Player */
-.video-player {
-    width: 100%; height: 100%; object-fit: cover;
+/* Metadados Abaixo */
+.video-meta {
+    padding: 10px 15px;
+    display: flex; gap: 12px;
 }
-
-/* Camada de Gradiente (Para ler o texto) */
-.video-gradient {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 60%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 1;
+.uploader-pic img {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
 }
+.info-text { flex: 1; }
 
-/* === 4. INTERFACE DO VÍDEO === */
-/* Lateral Direita (Ações) */
-.sidebar-actions {
-    position: absolute; right: 10px; bottom: 90px;
-    z-index: 5; display: flex; flex-direction: column; align-items: center; gap: 20px;
+.video-title {
+    font-size: 0.95rem; font-weight: 500; line-height: 1.3;
+    margin-bottom: 4px; color: #fff;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    line-clamp: 2;
 }
-.action-btn { display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 2px black; }
-.action-btn i { font-size: 28px; margin-bottom: 5px; transition: 0.2s; }
-.action-btn span { font-size: 12px; font-weight: 600; }
-.action-btn:active i { transform: scale(0.8); color: var(--primary); }
+.stats { font-size: 0.8rem; color: var(--text-sec); display: flex; align-items: center; gap: 5px; }
+.dot { font-size: 4px; vertical-align: middle; }
 
-/* Avatar com Botão (+) */
-.avatar-wrapper { position: relative; margin-bottom: 10px; }
-.avatar-wrapper img { width: 48px; height: 48px; border-radius: 50%; border: 2px solid white; }
-.plus-badge { position: absolute; bottom: -5px; left: 18px; background: #ff0055; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+/* === 5. LOADING & MODAL === */
+.loading-grid { text-align: center; padding: 40px; color: #666; }
+.spinner { width: 30px; height: 30px; border: 3px solid #333; border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s infinite; margin: 0 auto 10px; }
 
-/* Texto Inferior (Info) */
-.video-info {
-    position: absolute; left: 15px; bottom: 80px; width: 75%;
-    z-index: 4; text-shadow: 1px 1px 2px black;
-}
-.username { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; }
-.desc { font-size: 0.95rem; line-height: 1.3; margin-bottom: 10px; color: #eee; }
-.music-tag { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; }
-
-/* === 5. BOTTOM NAV === */
+/* Bottom Nav (Fixo embaixo) */
 .bottom-nav {
-    position: fixed; bottom: 0; width: 100%; height: 65px;
-    background: black; border-top: 1px solid #222;
-    display: flex; justify-content: space-around; align-items: center;
-    z-index: 20; padding-bottom: 5px;
+    position: fixed; bottom: 0; width: 100%;
+    background: #181818; border-top: 1px solid #333;
+    display: flex; justify-content: space-around; padding: 10px 0;
+    z-index: 90;
 }
-.nav-item { color: #666; font-size: 10px; display: flex; flex-direction: column; align-items: center; width: 20%; }
+.nav-item { color: #888; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; }
 .nav-item.active { color: white; }
-.nav-item i { font-size: 22px; margin-bottom: 4px; }
+.nav-item i { font-size: 1.3rem; margin-bottom: 4px; }
 
-/* Botão Central (+) */
-.plus-btn {
-    width: 45px; height: 30px; background: linear-gradient(90deg, #00f2ea, #ff0050);
-    border-radius: 8px; display: flex; justify-content: center; align-items: center;
-    border-left: 3px solid #00f2ea; border-right: 3px solid #ff0050;
-}
-
-/* === 6. MODAL (NEON GATE) === */
-.modal-overlay {
-    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(10px);
-}
-.modal-card {
-    background: #111; border: 1px solid #333; padding: 30px; border-radius: 20px;
-    width: 90%; text-align: center; position: relative;
-    box-shadow: 0 0 30px rgba(0,255,136,0.1);
-}
-.input-box {
-    background: #222; border-radius: 10px; padding: 15px; margin-bottom: 15px;
-    display: flex; align-items: center; gap: 10px; border: 1px solid #333;
-}
-.input-box input { background: transparent; border: none; color: white; width: 100%; outline: none; }
-.cta-btn {
-    width: 100%; background: var(--primary); padding: 15px; border: none; border-radius: 10px;
-    font-weight: 900; font-size: 1rem; text-transform: uppercase; cursor: pointer;
-}
-.neon-text { color: var(--primary); text-shadow: 0 0 10px var(--primary); }
-
-/* Loader */
-.loading-state { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #666; }
-.spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Modal simplificado */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+.modal-card { background: #222; padding: 30px; border-radius: 10px; width: 90%; max-width: 400px; text-align: center; position: relative; }
+.input-box input { width: 100%; padding: 12px; margin-bottom: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; }
+.cta-btn { width: 100%; padding: 12px; background: var(--primary); border: none; font-weight: bold; cursor: pointer; border-radius: 4px; }
+.close-btn { position: absolute; top: 10px; right: 15px; font-size: 20px; background: none; border: none; color: white; cursor: pointer; }
