@@ -1,147 +1,122 @@
+// js/app.js - Versão Integrada DB + UI
 const app = {
     state: {
-        isLogged: localStorage.getItem('axtron_token') !== null,
+        isLogged: !!localStorage.getItem('axtron_token'),
         user: JSON.parse(localStorage.getItem('axtron_user')) || null
     },
 
     init: function() {
         this.ui.updateInterface();
-        if (document.getElementById('feed-container')) this.renderHome();
-        if (window.location.pathname.includes('profile.html') && !this.state.isLogged) {
-            window.location.href = 'index.html';
+        
+        // Só carrega o feed se estivermos na Home
+        if (document.getElementById('feed-container')) {
+            this.renderHome();
         }
     },
 
-    // RENDERIZAÇÃO REAL DO BANCO DE DADOS
+    // --- CONEXÃO COM A API (FEED) ---
     renderHome: async function() {
         const feedEl = document.getElementById('feed-container');
         if (!feedEl) return;
 
+        feedEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px; color:#666;">Carregando vídeos... <i class="ph ph-spinner ph-spin"></i></div>`;
+
         try {
-            const response = await fetch('/posts'); 
+            // Chama a rota GET /posts do seu server.js
+            const response = await fetch('/posts');
             const videos = await response.json();
 
             if (!videos || videos.length === 0) {
-                feedEl.innerHTML = `<p style="color:#666; grid-column:1/-1; text-align:center; padding:40px;">Nenhum conteúdo disponível no momento.</p>`;
+                feedEl.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:50px;">
+                    <h3>Nenhum vídeo ainda 😢</h3>
+                    <p style="color:#888;">Seja o primeiro a postar!</p>
+                </div>`;
                 return;
             }
 
-            feedEl.innerHTML = videos.map(v => `
-                <article class="card" onclick="app.goToVideo(${v.id})">
+            // Renderiza cada vídeo do banco
+            feedEl.innerHTML = videos.map(v => {
+                // Ajusta URL da thumb (se não tiver, usa placeholder)
+                const thumb = v.thumbnail_url || `https://placehold.co/600x400/111/333?text=${encodeURIComponent(v.title)}`;
+                
+                return `
+                <article class="card" onclick="window.location.href='video.html?id=${v.id}'">
                     <div class="card-media-wrapper">
-                        ${v.is_premium ? '<span class="badge" style="background:var(--primary)">VIP</span>' : '<span class="badge">HD</span>'}
-                        <img src="${v.video_url && v.video_url.includes('http') ? v.video_url : '/uploads/' + v.video_url}" class="card-thumb" onerror="this.src='https://placehold.co/600x400/111/333?text=AXTRON'">
+                        ${v.is_premium ? '<span class="badge" style="background:var(--primary)">VIP Somente</span>' : '<span class="badge">Grátis</span>'}
+                        <img src="${thumb}" class="card-thumb" loading="lazy">
                         <div class="card-overlay">
-                            <h4 style="color:white; font-size:0.9rem;">${v.title}</h4>
-                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
-                                <span style="color:#ccc; font-size:0.8rem;">${v.views || 0} views</span>
-                                <button class="btn-feed-action" onclick="event.stopPropagation(); app.auth.guard()"><i class="ph ph-heart"></i></button>
+                            <h4 style="color:white; font-size:0.9rem; text-shadow:1px 1px 3px black;">${v.title}</h4>
+                            <div style="display:flex; justify-content:space-between; margin-top:5px; align-items:center;">
+                                <span style="color:#ccc; font-size:0.8rem;"><i class="ph ph-eye"></i> ${v.views || 0}</span>
+                                <span style="color:#ccc; font-size:0.8rem;">@${v.user_id}</span>
                             </div>
                         </div>
                     </div>
                 </article>
-            `).join('');
+            `}).join('');
+
         } catch (error) {
-            console.error("Erro ao carregar feed:", error);
-            feedEl.innerHTML = `<p style="color:#ff4444; grid-column:1/-1; text-align:center;">Erro ao conectar com a API.</p>`;
+            console.error("Erro no feed:", error);
+            feedEl.innerHTML = `<p style="color:#ff4444; text-align:center; grid-column:1/-1;">Erro ao carregar vídeos. Verifique a API.</p>`;
         }
     },
 
-    auth: {
-        logout: function() {
-            localStorage.clear();
-            window.location.href = 'index.html';
-        },
-        guard: function(callback) {
-            if (app.state.isLogged) {
-                if(callback) callback();
-            } else {
-                app.ui.openLoginModal("Entre para acessar essa função.");
-            }
-        }
-    },
-
+    // --- GERENCIAMENTO DE TELA (UI) ---
     ui: {
         updateInterface: function() {
             const sidebar = document.getElementById('sidebarMenu');
-            const mobile = document.getElementById('mobileMenu');
-            const header = document.getElementById('headerAuth');
+            const headerAuth = document.getElementById('headerAuth');
             const logoutArea = document.getElementById('logoutArea');
 
-            // 1. HEADER AUTH
-            if (header) {
+            // 1. HEADER (Topo)
+            if (headerAuth) {
                 if (app.state.isLogged) {
-                    header.innerHTML = `
-                        <button class="btn-icon" onclick="window.location.href='profile.html'"><i class="ph ph-video-camera"></i></button>
-                        <img src="${app.state.user?.avatar || 'https://placehold.co/100x100/ff0055/fff?text=EU'}" class="header-avatar" onclick="window.location.href='profile.html'">
+                    headerAuth.innerHTML = `
+                        <button class="btn-icon" onclick="window.location.href='profile.html'"><i class="ph ph-upload-simple"></i></button>
+                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="window.location.href='profile.html'">
+                            <span style="color:white; font-size:0.9rem;">${app.state.user.name.split(' ')[0]}</span>
+                            <img src="${app.state.user.avatar || 'https://placehold.co/100x100/333/fff?text=U'}" class="header-avatar">
+                        </div>
                     `;
                 } else {
-                    header.innerHTML = `
-                        <button class="btn-signup" onclick="app.ui.openLoginModal()"><i class="ph ph-user-plus"></i> CRIAR CONTA</button>
+                    headerAuth.innerHTML = `
+                        <button class="btn-signup" onclick="app.ui.openLoginModal()"><i class="ph ph-user-plus"></i></button>
                         <button class="btn-login" onclick="app.ui.openLoginModal()">ENTRAR</button>
                     `;
                 }
             }
 
-            // 2. SIDEBAR DINÂMICA
+            // 2. SIDEBAR (Lateral)
             if (sidebar) {
                 if (app.state.isLogged) {
                     sidebar.innerHTML = `
-                        <a href="index.html" class="nav-btn active"><i class="ph ph-house-fill"></i> Home</a>
-                        <a href="#" class="nav-btn"><i class="ph ph-compass"></i> Explore</a>
-                        <a href="#" class="nav-btn btn-leaks"><i class="ph ph-lock-key-open-fill"></i> VAZADOS</a>
-                        <div style="border-top:1px solid #333; margin:15px 0; padding-top:15px;">
-                            <span style="font-size:0.7rem; color:#666; padding-left:12px; text-transform:uppercase; font-weight:bold;">Studio</span>
-                            <a href="profile.html" class="nav-btn"><i class="ph ph-user-circle"></i> Meu Perfil</a>
-                            <a href="#" class="nav-btn"><i class="ph ph-chart-line-up"></i> Analytics</a>
-                            <a href="#" class="nav-btn"><i class="ph ph-currency-dollar"></i> Faturamento</a>
-                        </div>
+                        <a href="index.html" class="nav-btn active"><i class="ph ph-house-fill"></i> Início</a>
+                        <a href="#" class="nav-btn"><i class="ph ph-compass"></i> Explorar</a>
+                        <a href="#" class="nav-btn" style="color:var(--primary)"><i class="ph ph-crown-simple"></i> Assinaturas</a>
+                        <div class="nav-divider"></div>
+                        <a href="profile.html" class="nav-btn"><i class="ph ph-user-circle"></i> Meu Canal</a>
+                        <a href="profile.html" class="nav-btn"><i class="ph ph-chart-bar"></i> Analytics</a>
                     `;
-                    if(logoutArea) logoutArea.innerHTML = `<button class="nav-btn" onclick="app.auth.logout()" style="color:#ff4444;"><i class="ph ph-sign-out"></i> Sair</button>`;
+                    // Botão Sair no rodapé do menu
+                    if(logoutArea) logoutArea.innerHTML = `<button onclick="Auth.logout()" class="nav-btn" style="color:#ff6b6b;"><i class="ph ph-sign-out"></i> Sair</button>`;
                 } else {
                     sidebar.innerHTML = `
-                        <a href="index.html" class="nav-btn active"><i class="ph ph-house-fill"></i> Home</a>
+                        <a href="index.html" class="nav-btn active"><i class="ph ph-house-fill"></i> Início</a>
                         <a href="#" class="nav-btn"><i class="ph ph-fire"></i> Em Alta</a>
-                        <a href="#" class="nav-btn btn-live"><i class="ph ph-broadcast"></i> Ao Vivo <div class="live-dot"></div></a>
-                        <a href="#" class="nav-btn btn-leaks"><i class="ph ph-lock-key-open-fill"></i> VAZADOS</a>
-                        <a href="#" class="nav-btn" onclick="app.auth.guard()"><i class="ph ph-star"></i> Favoritos</a>
+                        <a href="#" class="nav-btn" onclick="app.ui.openLoginModal()"><i class="ph ph-lock-key"></i> Login para ver mais</a>
                     `;
                     if(logoutArea) logoutArea.innerHTML = '';
                 }
             }
-
-            // 3. MOBILE NAV
-            if (mobile) {
-                if (app.state.isLogged) {
-                    mobile.innerHTML = `
-                        <a href="index.html" class="b-nav-item active"><i class="ph ph-house-fill"></i></a>
-                        <a href="#" class="b-nav-item"><i class="ph ph-compass"></i></a>
-                        <a href="profile.html" class="b-nav-item highlight"><i class="ph ph-plus-circle-fill"></i></a>
-                        <a href="#" class="b-nav-item"><i class="ph ph-chart-bar"></i></a>
-                        <a href="profile.html" class="b-nav-item"><i class="ph ph-user"></i></a>
-                    `;
-                } else {
-                    mobile.innerHTML = `
-                        <a href="index.html" class="b-nav-item active"><i class="ph ph-house-fill"></i></a>
-                        <a href="#" class="b-nav-item"><i class="ph ph-fire"></i></a>
-                        <a href="#" class="b-nav-item highlight"><i class="ph ph-lock-key-open-fill"></i></a>
-                        <a href="#" class="b-nav-item"><i class="ph ph-broadcast"></i></a>
-                        <a href="#" class="b-nav-item" onclick="app.ui.openLoginModal()"><i class="ph ph-user"></i></a>
-                    `;
-                }
-            }
         },
-        openLoginModal: function(msg) {
-            const modal = document.getElementById('loginModal');
-            if(msg) document.getElementById('loginMsg').innerText = msg;
-            modal.classList.add('open');
+
+        openLoginModal: function() {
+            document.getElementById('loginModal').classList.add('open');
         },
         closeLoginModal: function() {
             document.getElementById('loginModal').classList.remove('open');
         }
-    },
-
-    goToVideo: function(id) { window.location.href = `video.html?id=${id}`; }
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => app.init());

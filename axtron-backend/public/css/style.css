@@ -226,6 +226,7 @@ body {
     justify-content: center;
     animation: fadeIn 0.3s ease;
 }
+.modal-overlay.open { display: flex; }
 
 .modal-content {
     background: linear-gradient(160deg, #1a1a1a 0%, #050505 100%);

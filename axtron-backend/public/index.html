@@ -46,7 +46,7 @@
             <i class="fa-solid fa-bell"></i>
             <span>Alertas</span>
         </a>
-        <a href="#" class="nav-item" onclick="abrirModal()">
+        <a href="#" class="nav-item" onclick="app.ui.openLoginModal()">
             <i class="fa-solid fa-lock"></i>
             <span>Cofre VIP</span>
         </a>
@@ -93,6 +93,31 @@
                     <span><i class="fa-solid fa-mask"></i> Anon</span>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal-overlay">
+        <div class="modal-content cyber-border">
+            <button class="close-btn" onclick="app.ui.closeLoginModal()">&times;</button>
+            <div class="modal-header">
+                <div class="live-badge"><span class="blink-dot"></span> 24/7 SECURE</div>
+                <h2 class="glitch" data-text="LOGIN_REQUIRED">ENTRAR <span class="neon-text">AGORA</span></h2>
+                <p class="subtitle">Use suas credenciais para continuar.</p>
+            </div>
+            <div class="input-group">
+                <input type="email" required placeholder=" " autocomplete="off">
+                <label>E-mail</label>
+                <i class="icon fa-solid fa-user"></i>
+                <div class="input-line"></div>
+            </div>
+            <div class="input-group">
+                <input type="password" required placeholder=" ">
+                <label>Senha</label>
+                <i class="icon fa-solid fa-lock"></i>
+                <div class="input-line"></div>
+            </div>
+            <p id="loginMsg" style="color:#888; margin:0 0 10px; font-size:0.9rem;"></p>
+            <button onclick="Auth.login()" class="btn-primary-glow" style="width:100%; justify-content:center;">ENTRAR AGORA</button>
         </div>
     </div>
 
