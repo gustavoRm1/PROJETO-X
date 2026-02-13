@@ -77,35 +77,33 @@
             <form id="form-login" class="auth-form active-form" onsubmit="loginUsuario(event)">
                 <div class="input-box">
                     <label>Usuário ou E-mail</label>
-                    <input type="text" id="login-email" required>
+                    <input type="text" id="login-email" placeholder="Digite seu login..." required>
                 </div>
                 <div class="input-box">
                     <label>Senha</label>
-                    <input type="password" id="login-pass" required>
+                    <input type="password" id="login-pass" placeholder="Sua senha..." required>
                 </div>
                 <div class="form-options">
-                    <label><input type="checkbox" checked> Lembrar</label>
+                    <label><input type="checkbox" checked> Lembrar de mim</label>
                     <a href="#">Esqueci a senha</a>
                 </div>
                 <button type="submit" class="cta-btn login-btn">ACESSAR CONTA</button>
             </form>
 
             <form id="form-register" class="auth-form" onsubmit="registrarUsuario(event)">
-                <div class="input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="reg-email" placeholder="E-mail" required>
+                <div class="input-box">
+                    <label>Seu Melhor E-mail</label>
+                    <input type="email" id="reg-email" placeholder="exemplo@email.com" required>
+                </div>
+                <div class="input-box">
+                    <label>Escolha um Usuário</label>
+                    <input type="text" id="reg-user" placeholder="Como quer ser chamado?" required>
+                </div>
+                <div class="input-box">
+                    <label>Crie uma Senha</label>
+                    <input type="password" id="reg-pass" placeholder="Mínimo 6 caracteres" required>
                 </div>
                 
-                <div class="input-group">
-                    <i class="fa-solid fa-user"></i>
-                    <input type="text" id="reg-user" placeholder="Usuário (Apelido)" required>
-                </div>
-                
-                <div class="input-group">
-                    <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="reg-pass" placeholder="Senha" required>
-                </div>
-
                 <button type="submit" class="btn-primary-glow">CRIAR CONTA GRÁTIS</button>
                 <p class="terms">Ao criar conta, você confirma ter 18+ anos.</p>
             </form>
