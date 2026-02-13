@@ -1,144 +1,238 @@
-/* AXTRON TUBE ENGINE */
+/* AXTRON ENGINE V5 - FULL INTEGRATION */
 
-// Dados Simulados (Padrão Tube)
-const MOCK_VIDEOS = [
-    { 
-        id: 1, 
-        title: "Vazou no Privacy: Safira Hot mostrando tudo na piscina 😈", 
-        thumb: "https://via.placeholder.com/640x360/111/00ff88?text=THUMB+1", // Substitua por URL real
-        preview: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4",
-        duration: "12:40", 
-        quality: "4K", 
-        views: "1.2M", 
-        time: "2 dias atrás", 
-        uploader: "Safira Hot",
-        avatar: "https://ui-avatars.com/api/?name=Safira&background=random"
+const App = {
+    state: {
+        token: localStorage.getItem('axtron_token'),
+        user: JSON.parse(localStorage.getItem('axtron_user')),
+        videos: []
     },
-    { 
-        id: 2, 
-        title: "Amador BR: Novinha se exibindo na webcam (Completo)", 
-        thumb: "https://via.placeholder.com/640x360/111/ff0044?text=THUMB+2", 
-        preview: "https://assets.mixkit.co/videos/preview/mixkit-woman-dancing-under-neon-lights-1282-large.mp4",
-        duration: "08:15", 
-        quality: "HD", 
-        views: "850K", 
-        time: "5 horas atrás", 
-        uploader: "AnonX",
-        avatar: "https://ui-avatars.com/api/?name=Anon&background=000&color=fff"
+
+    init: function() {
+        console.log("AXTRON Engine Iniciado 🚀");
+        this.loadVideos(); // Carrega feed inicial
+        this.setupListeners();
+        this.checkLoginState();
     },
-    { 
-        id: 3, 
-        title: "Compilado melhores momentos da semana (VIP)", 
-        thumb: "https://via.placeholder.com/640x360/111/00b7ff?text=THUMB+3", 
-        preview: "https://assets.mixkit.co/videos/preview/mixkit-red-lights-in-dark-room-1233-large.mp4",
-        duration: "22:00", 
-        quality: "1080p", 
-        views: "3.4M", 
-        time: "1 semana atrás", 
-        uploader: "AxtronOfficial",
-        avatar: "https://ui-avatars.com/api/?name=Ax&background=00ff88&color=000"
-    }
-];
 
-// Gera mais dados fake para encher a tela
-for(let i=0; i<5; i++) MOCK_VIDEOS.push(...MOCK_VIDEOS); 
+    // --- CONFIGURAÇÃO DE EVENTOS ---
+    setupListeners: function() {
+        // Busca ao pressionar ENTER
+        const searchInput = document.getElementById('search-input');
+        if(searchInput) {
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.realizarBusca();
+            });
+        }
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderTubeFeed();
-});
+        // Botão de Busca (Lupa) - Caso você adicione um botão de clique
+        const searchBtn = document.getElementById('search-btn');
+        if(searchBtn) {
+            searchBtn.addEventListener('click', () => this.realizarBusca());
+        }
+    },
 
-function renderTubeFeed() {
-    const container = document.getElementById('tube-feed');
-    container.innerHTML = ''; // Limpa loader
-
-    MOCK_VIDEOS.forEach((vid, index) => {
-        // ID único para controle de preview
-        const uniqueID = `vid-${index}`;
+    // --- VERIFICAÇÃO DE LOGIN ---
+    checkLoginState: function() {
+        const loginBtn = document.getElementById('header-login-btn'); 
         
-        const html = `
-            <article class="video-card" onclick="irParaVideo('${vid.id}')">
-                <div class="thumb-container" id="${uniqueID}">
-                    <img src="${vid.thumb}" class="poster-img" alt="Thumbnail">
-                    
-                    <video src="${vid.preview}" class="preview-video" muted loop playsinline></video>
-                    
-                    <span class="duration">${vid.duration}</span>
-                    <span class="quality-badge">${vid.quality}</span>
-                </div>
-                
-                <div class="video-meta">
-                    <div class="uploader-pic">
-                        <img src="${vid.avatar}" alt="${vid.uploader}">
+        if(this.state.token && loginBtn) {
+            // Usuário Logado: Mostra Perfil
+            const username = this.state.user ? this.state.user.name.split(' ')[0] : 'Perfil';
+            loginBtn.innerHTML = `<i class="fa-solid fa-user"></i> ${username}`;
+            loginBtn.onclick = () => window.location.href = 'profile.html';
+            loginBtn.classList.add('logged-in');
+        } else if (loginBtn) {
+            // Usuário Deslogado: Abre Modal
+            loginBtn.innerHTML = 'ENTRAR';
+            loginBtn.onclick = () => this.ui.abrirModalAuth('login');
+        }
+    },
+
+    // --- CORE: CARREGAR VÍDEOS DA API ---
+    loadVideos: async function(termo = '') {
+        const container = document.getElementById('tube-feed');
+        if(!container) return;
+
+        container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#666;"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i><br>Carregando...</div>';
+
+        try {
+            // Constrói a URL: se tiver termo, usa ?search=...
+            const url = termo ? `/posts?search=${encodeURIComponent(termo)}` : '/posts';
+            
+            const response = await fetch(url);
+            
+            if(!response.ok) throw new Error('Falha na API');
+
+            const videos = await response.json();
+            this.renderGrid(videos);
+
+        } catch (error) {
+            console.error(error);
+            container.innerHTML = `
+                <div style="grid-column:1/-1; text-align:center; padding:40px;">
+                    <i class="fa-solid fa-wifi" style="color:#ff4444; font-size:2rem; margin-bottom:10px;"></i>
+                    <p>Erro de conexão com o servidor.</p>
+                    <button onclick="App.loadVideos()" style="padding:5px 10px; cursor:pointer;">Tentar Novamente</button>
+                </div>`;
+        }
+    },
+
+    // --- RENDERIZAÇÃO DO GRID (HTML) ---
+    renderGrid: function(videos) {
+        const container = document.getElementById('tube-feed');
+        container.innerHTML = ''; 
+
+        if (!videos || videos.length === 0) {
+            container.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#888;"><h3>Nenhum vídeo encontrado 😢</h3><p>Tente buscar por outro termo.</p></div>';
+            return;
+        }
+
+        videos.forEach(vid => {
+            // Lógica de tempo (ex: "há 2 dias")
+            const timeAgo = this.helpers.timeSince(new Date(vid.created_at));
+            
+            // Thumbnail (Usa placeholder se não tiver)
+            const thumb = vid.thumbnail_url || `https://via.placeholder.com/400x225/111/333?text=${encodeURIComponent(vid.title)}`;
+            
+            // Username (fallback se não tiver join)
+            const author = vid.username ? `@${vid.username}` : '@admin';
+
+            const html = `
+                <article class="video-card" onclick="window.location.href='video.html?id=${vid.id}'">
+                    <div class="thumb-container">
+                        <img src="${thumb}" class="poster-img" alt="${vid.title}" loading="lazy">
+                        <span class="duration">${vid.duration || 'HD'}</span>
+                        <div class="play-overlay"><i class="fa-solid fa-play"></i></div>
                     </div>
-                    <div class="info-text">
+                    <div class="video-meta">
                         <h3 class="video-title">${vid.title}</h3>
                         <div class="stats">
-                            <span>${vid.uploader}</span>
+                            <span class="author">${author}</span>
                             <span class="dot">•</span>
-                            <span>${vid.views} views</span>
+                            <span>${vid.views || 0} views</span>
                             <span class="dot">•</span>
-                            <span>${vid.time}</span>
+                            <span>${timeAgo}</span>
                         </div>
                     </div>
-                    <div class="action-dots">
-                        <i class="fa-solid fa-ellipsis-vertical" style="color:#555"></i>
-                    </div>
-                </div>
-            </article>
-        `;
-        container.innerHTML += html;
-    });
-
-    initSmartPreviews();
-}
-
-// LÓGICA DE PREVIEW INTELIGENTE (Padrão Pornhub/Xvideos Mobile)
-function initSmartPreviews() {
-    // Desktop: Hover (Mouse)
-    if (window.matchMedia("(min-width: 768px)").matches) {
-        document.querySelectorAll('.thumb-container').forEach(card => {
-            const video = card.querySelector('video');
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('playing');
-                video.play();
-            });
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('playing');
-                video.pause();
-                video.currentTime = 0;
-            });
+                </article>
+            `;
+            container.innerHTML += html;
         });
-    } 
-    // Mobile: Intersection Observer (Scroll)
-    else {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                const card = entry.target;
-                const video = card.querySelector('video');
-                
-                if (entry.isIntersecting) {
-                    // Está no centro da tela? Toca.
-                    card.classList.add('playing');
-                    video.play().catch(() => {}); // Catch evita erros de autoplay
+    },
+
+    realizarBusca: function() {
+        const input = document.getElementById('search-input');
+        if(input) {
+            this.loadVideos(input.value);
+        }
+    },
+
+    // --- CONTROLE DE UI (MODAL E ABAS) ---
+    ui: {
+        abrirModalAuth: function(tab) {
+            const modal = document.getElementById('auth-modal');
+            if(modal) {
+                modal.style.display = 'flex';
+                this.switchAuthTab(tab);
+            }
+        },
+        
+        fecharModal: function() {
+            const modal = document.getElementById('auth-modal');
+            if(modal) modal.style.display = 'none';
+        },
+
+        switchAuthTab: function(tabName) {
+            // Reseta visual dos botões
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            // Esconde todos os formulários
+            document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active-form'));
+
+            if (tabName === 'login') {
+                const btnLogin = document.querySelector('.tab-btn:nth-child(1)');
+                const formLogin = document.getElementById('form-login');
+                if(btnLogin) btnLogin.classList.add('active');
+                if(formLogin) formLogin.classList.add('active-form');
+            } else {
+                const btnRegister = document.querySelector('.tab-btn:nth-child(2)');
+                const formRegister = document.getElementById('form-register');
+                if(btnRegister) btnRegister.classList.add('active');
+                if(formRegister) formRegister.classList.add('active-form');
+            }
+        }
+    },
+
+    // --- AUTENTICAÇÃO ---
+    auth: {
+        login: async function(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            
+            // Feedback Visual
+            btn.innerText = "Verificando...";
+            btn.style.opacity = "0.7";
+            btn.disabled = true;
+
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+
+            try {
+                const res = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email, password: pass })
+                });
+                const data = await res.json();
+
+                if(res.ok) {
+                    // Salva sessão
+                    localStorage.setItem('axtron_token', data.token);
+                    localStorage.setItem('axtron_user', JSON.stringify(data.user));
+                    window.location.reload(); // Recarrega para aplicar login
                 } else {
-                    // Saiu da tela? Para.
-                    card.classList.remove('playing');
-                    video.pause();
+                    alert(data.error || 'Credenciais inválidas!');
                 }
-            });
-        }, { threshold: 0.7 }); // 70% visível para ativar
+            } catch(err) {
+                console.error(err);
+                alert('Erro ao conectar com o servidor.');
+            } finally {
+                btn.innerText = originalText;
+                btn.style.opacity = "1";
+                btn.disabled = false;
+            }
+        },
 
-        document.querySelectorAll('.thumb-container').forEach(el => observer.observe(el));
+        register: function(e) {
+            e.preventDefault();
+            alert("Módulo de registro em desenvolvimento (Backend v2)");
+        }
+    },
+
+    // --- FUNÇÕES UTILITÁRIAS ---
+    helpers: {
+        timeSince: function(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " anos";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " meses";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h";
+            return Math.floor(seconds / 60) + "m";
+        }
     }
-}
+};
 
-// Navegação
-function irParaVideo(id) {
-    // Aqui você redirecionaria para video.html?id=...
-    console.log("Abrindo vídeo ID:", id);
-    alert("Indo para o player do vídeo " + id);
-}
+// --- INICIALIZAÇÃO E EXPOSIÇÃO GLOBAL ---
+document.addEventListener('DOMContentLoaded', () => App.init());
 
-// Modal Control
-function abrirModal() { document.getElementById('signup-modal').style.display = 'flex'; }
-function fecharModal() { document.getElementById('signup-modal').style.display = 'none'; }
+// Funções globais para o HTML (onclick="")
+window.abrirModalAuth = (t) => App.ui.abrirModalAuth(t);
+window.fecharModal = () => App.ui.fecharModal();
+window.switchAuthTab = (t) => App.ui.switchAuthTab(t);
+window.loginUsuario = (e) => App.auth.login(e);
+window.registrarUsuario = (e) => App.auth.register(e);
+window.realizarBusca = () => App.realizarBusca();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AXTRON | The Social Tube</title>
+    <title>DesejosHot | Premium Tube</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -16,71 +16,97 @@
     <header class="tube-header">
         <div class="header-left">
             <div class="menu-btn"><i class="fa-solid fa-bars"></i></div>
-            <div class="logo">AXTRON<span class="badge-pro">PRO</span></div>
+            <div class="logo">Desejos<span class="hot-text">Hot</span></div>
         </div>
+        
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Pesquisar vídeos..." autocomplete="off">
+            <button class="search-btn-action" onclick="realizarBusca()">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </button>
+        </div>
+
         <div class="header-right">
-            <i class="fa-solid fa-magnifying-glass search-icon"></i>
-            <div class="user-avatar" onclick="abrirModal()">
+            <div class="user-avatar" onclick="abrirModalAuth('login')">
                 <i class="fa-solid fa-user"></i>
             </div>
-            <button class="upload-btn" onclick="abrirModal()">UPLOAD</button>
         </div>
     </header>
 
     <div class="categories-bar">
-        <span class="cat-pill active">Recomendados</span>
-        <span class="cat-pill">Vazados BR</span>
-        <span class="cat-pill">Amador</span>
+        <span class="cat-pill active">Tudo</span>
+        <span class="cat-pill">Novinhas</span>
+        <span class="cat-pill">Amador BR</span>
+        <span class="cat-pill">Vazados</span>
         <span class="cat-pill">POV</span>
-        <span class="cat-pill">Verified <i class="fa-solid fa-circle-check"></i></span>
+        <span class="cat-pill">Anal</span>
         <span class="cat-pill">Hentai</span>
     </div>
 
     <main id="tube-feed">
-        <div class="loading-grid">
-            <div class="spinner"></div>
-            <p>Carregando Miniaturas...</p>
-        </div>
-    </main>
+        </main>
 
     <nav class="bottom-nav">
-        <div class="nav-item active">
+        <div class="nav-item active" onclick="location.reload()">
             <i class="fa-solid fa-house"></i>
             <span>Home</span>
         </div>
         <div class="nav-item">
             <i class="fa-solid fa-fire"></i>
-            <span>Hot</span>
+            <span>Em Alta</span>
         </div>
         <div class="nav-item">
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Subs</span>
+            <i class="fa-solid fa-star"></i>
+            <span>Favoritos</span>
         </div>
-        <div class="nav-item" onclick="abrirModal()">
-            <i class="fa-solid fa-folder-open"></i>
+        <div class="nav-item" onclick="abrirModalAuth('login')">
+            <i class="fa-solid fa-folder"></i>
             <span>Library</span>
         </div>
     </nav>
 
-    <div id="signup-modal" class="modal-overlay">
+    <div id="auth-modal" class="modal-overlay">
         <div class="modal-card">
             <button class="close-btn" onclick="fecharModal()">&times;</button>
-            <div class="modal-header">
-                <h2>JOIN THE <span class="neon-text">COMMUNITY</span></h2>
-                <p>Crie playlists, siga criadores e veja em 4K.</p>
+            
+            <div class="auth-tabs">
+                <div class="tab-btn active" onclick="switchAuthTab('login')">ENTRAR</div>
+                <div class="tab-btn" onclick="switchAuthTab('register')">CRIAR CONTA</div>
             </div>
-            <form onsubmit="registrarUsuario(event)">
+
+            <form id="form-login" class="auth-form active-form" onsubmit="loginUsuario(event)">
                 <div class="input-box">
-                    <input type="email" id="email" placeholder="E-mail" required>
+                    <label>Usuário ou E-mail</label>
+                    <input type="text" required>
                 </div>
                 <div class="input-box">
-                    <input type="password" id="password" placeholder="Senha" required>
+                    <label>Senha</label>
+                    <input type="password" required>
                 </div>
-                <button type="submit" class="cta-btn">CRIAR CONTA GRÁTIS</button>
+                <div class="form-options">
+                    <label><input type="checkbox" checked> Lembrar</label>
+                    <a href="#">Esqueci a senha</a>
+                </div>
+                <button type="submit" class="cta-btn login-btn">ACESSAR CONTA</button>
             </form>
-            <div class="modal-footer">
-                <p>Ao entrar, você confirma ter 18+ anos.</p>
-            </div>
+
+            <form id="form-register" class="auth-form" onsubmit="registrarUsuario(event)">
+                <div class="input-box">
+                    <label>E-mail</label>
+                    <input type="email" required>
+                </div>
+                <div class="input-box">
+                    <label>Usuário (Apelido)</label>
+                    <input type="text" required>
+                </div>
+                <div class="input-box">
+                    <label>Senha</label>
+                    <input type="password" required>
+                </div>
+                <button type="submit" class="cta-btn register-btn">CRIAR CONTA GRÁTIS</button>
+                <p class="terms">Ao criar conta, você confirma ter 18+ anos.</p>
+            </form>
+
         </div>
     </div>
 
