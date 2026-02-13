@@ -149,40 +149,38 @@ const app = {
     },
 
     // RENDERIZADORES DA HOME
-    renderHome: function() {
-        const storiesEl = document.getElementById('storiesContainer');
-        storiesEl.innerHTML = this.db.stories.map(s => `
-            <div class="story-item" onclick="app.auth.guard(() => alert('Story...'))">
-                <div class="story-ring ${s.live ? 'live' : ''}"><img src="${s.img}" class="story-img"></div>
-                <span class="story-name">${s.name}</span>
-            </div>
-        `).join('');
-
-        const heroEl = document.getElementById('heroContainer');
-        heroEl.innerHTML = this.db.hero.map(h => `
-            <div class="hero-card" onclick="app.goToVideo(${h.id})">
-                <img src="${h.img}" class="hero-img">
-                <div class="hero-content"><span class="hero-tag">${h.tag}</span><h2 class="hero-title">${h.title}</h2></div>
-            </div>
-        `).join('');
-
+    renderHome: async function() {
         const feedEl = document.getElementById('feed-container');
-        const rawVideos = [...this.db.videos, ...this.db.videos];
-        feedEl.innerHTML = rawVideos.map(v => `
-            <article class="card" onclick="app.goToVideo(${v.id})">
-                <div class="card-media-wrapper">
-                    ${v.pro ? '<span class="badge" style="background:var(--primary)">VIP</span>' : '<span class="badge">HD</span>'}
-                    <img src="${v.thumb}" class="card-thumb">
-                    <div class="card-overlay">
-                        <h4 style="color:white; font-size:0.9rem;">${v.title}</h4>
-                        <div style="display:flex; justify-content:space-between; margin-top:5px;">
-                            <span style="color:#ccc; font-size:0.8rem;">${v.views}</span>
-                            <button class="btn-feed-action" onclick="event.stopPropagation(); app.auth.guard()"><i class="ph ph-heart"></i></button>
+        if (!feedEl) return;
+
+        try {
+            const response = await fetch('/posts');
+            const videos = await response.json();
+
+            if (!videos.length) {
+                feedEl.innerHTML = `<p style="color: #666; grid-column: 1/-1; text-align: center; padding: 50px;">Nenhum vídeo encontrado no banco de dados.</p>`;
+                return;
+            }
+
+            feedEl.innerHTML = videos.map(v => `
+                <article class="card" onclick="app.goToVideo(${v.id})">
+                    <div class="card-media-wrapper">
+                        ${v.is_premium ? '<span class="badge" style="background:var(--primary)">VIP</span>' : '<span class="badge">HD</span>'}
+                        <img src="${v.thumbnail_url || 'https://placehold.co/600x400/111/333?text=AXTRON'}" class="card-thumb">
+                        <div class="card-overlay">
+                            <h4 style="color:white; font-size:0.9rem;">${v.title}</h4>
+                            <div style="display:flex; justify-content:space-between; margin-top:5px;">
+                                <span style="color:#ccc; font-size:0.8rem;">${v.views} views</span>
+                                <button class="btn-feed-action" onclick="event.stopPropagation(); app.auth.guard()"><i class="ph ph-heart"></i></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </article>
-        `).join('');
+                </article>
+            `).join('');
+        } catch (error) {
+            console.error("Erro ao carregar feed real:", error);
+            feedEl.innerHTML = `<p style="color: #ff4444; grid-column: 1/-1; text-align: center;">Erro ao conectar com o servidor.</p>`;
+        }
     },
 
     goToVideo: function(id) { window.location.href = `video.html?id=${id}`; }
