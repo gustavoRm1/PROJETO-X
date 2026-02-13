@@ -1,525 +1,113 @@
-/* =========================================
-   === 1. VARIÁVEIS & RESET GLOBAL ===
-   ========================================= */
+/* === RESET & BASE (Dark Mode Nativo) === */
 :root {
-    --neon-green: #00ff88;
-    --neon-red: #ff0044;
-    --neon-blue: #00b7ff;
-    --dark-bg: #050505;
-    --card-bg: #111111;
-    --text-gray: #aaaaaa;
-    --glass: rgba(20, 20, 20, 0.9);
+    --primary: #00ff88;
+    --bg: #000000;
+    --glass: rgba(255, 255, 255, 0.1);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Remove flash azul no mobile */
-}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body { background: var(--bg); color: white; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; overflow: hidden; /* Importante para o App feel */ height: 100vh; }
 
-body {
-    background-color: var(--dark-bg);
-    color: white;
-    overflow-x: hidden; /* Evita scroll lateral */
-}
-
-/* =========================================
-   === 2. CABEÇALHO FIXO (HEADER) ===
-   ========================================= */
-.app-header {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* === TOP BAR (Transparente) === */
+.top-bar {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 15px 20px;
-    background: linear-gradient(to bottom, rgba(5,5,5,0.95), transparent);
-    z-index: 100;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
+.live-status { font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+.pulsing-dot { width: 8px; height: 8px; background: red; border-radius: 50%; animation: pulse 1s infinite; }
+.tabs-control { font-weight: 600; font-size: 1rem; color: #888; }
+.tabs-control .active-tab { color: white; border-bottom: 2px solid white; padding-bottom: 3px; margin-right: 15px; }
 
-.logo {
-    font-weight: 900;
-    font-size: 1.5rem;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.neon-dot {
-    color: var(--neon-green);
-    text-shadow: 0 0 10px var(--neon-green);
-}
-
-.header-icons i {
-    font-size: 1.4rem;
-    margin-left: 20px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.active-icon {
-    color: var(--neon-green);
-    filter: drop-shadow(0 0 5px var(--neon-green));
-}
-
-/* =========================================
-   === 3. FEED PRINCIPAL (TIKTOK STYLE) ===
-   ========================================= */
-#feed-container {
-    padding-top: 0; /* Fullscreen feeling */
-    padding-bottom: 70px; /* Espaço para o menu inferior */
-    background: var(--dark-bg);
-    min-height: 100vh;
-}
-
-/* Loader Inicial */
-.loader-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/* === FEED COM SCROLL SNAP (O segredo do TikTok) === */
+#feed-view {
     height: 100vh;
-    color: var(--neon-green);
-    font-size: 0.9rem;
-    letter-spacing: 1px;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
 }
 
-.cyber-loader {
-    border: 3px solid rgba(0, 255, 136, 0.1);
-    border-top: 3px solid var(--neon-green);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 20px;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-}
-
-/* Cartão de Vídeo */
-.video-card {
+/* Cada Vídeo Ocupa 100% da Tela */
+.video-container {
     position: relative;
     width: 100%;
-    height: 88vh; /* Quase tela cheia */
-    background: var(--card-bg);
-    margin-bottom: 2px;
+    height: 100vh; /* Tela cheia */
+    scroll-snap-align: start; /* O imã */
+    background: #111;
     overflow: hidden;
-    scroll-snap-align: start; /* Para efeito de snap futuro */
 }
 
-/* Imagem/Thumb do Vídeo */
-.video-card img.thumb {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.85;
+.video-player {
+    width: 100%; height: 100%; object-fit: cover;
 }
 
-/* Overlay Escuro para Texto */
-.video-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 80px 20px 30px 20px; /* Padding bottom maior por causa do menu */
-    background: linear-gradient(to top, var(--dark-bg), transparent);
-}
-
-.video-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-}
-
-/* Badge VIP */
-.vip-badge {
-    position: absolute;
-    top: 70px; /* Abaixo do header */
-    right: 20px;
-    background: rgba(0,0,0,0.6);
-    border: 1px solid var(--neon-green);
-    color: var(--neon-green);
-    padding: 6px 14px;
-    border-radius: 30px;
-    font-weight: bold;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
-    backdrop-filter: blur(5px);
-}
-
-/* =========================================
-   === 4. MENU INFERIOR (BOTTOM NAV) ===
-   ========================================= */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(15px);
-    padding: 12px 0;
-    border-top: 1px solid #222;
-    z-index: 100;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: #666;
-    font-size: 0.7rem;
-    transition: 0.3s;
-}
-
-.nav-item i {
-    font-size: 1.4rem;
-    margin-bottom: 4px;
-}
-
-.nav-item.active {
-    color: white;
-}
-
-.nav-item.active i {
-    color: white;
-    text-shadow: 0 0 10px rgba(255,255,255,0.5);
-}
-
-/* Botão Central (+) */
-.center-btn {
-    background: linear-gradient(135deg, var(--neon-green), var(--neon-blue));
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black !important;
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
-    transform: translateY(-15px);
-    border: 3px solid var(--dark-bg);
-}
-
-.center-btn i {
-    margin-bottom: 0;
-    font-size: 1.6rem;
-}
-
-/* =========================================
-   === 5. MODAL "NEON GATE" V2.0 (POPUP) ===
-   ========================================= */
-.modal-overlay {
-    display: none; /* JS ativa com flex */
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.95); /* Foco total */
-    backdrop-filter: blur(20px);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.3s ease;
-}
-.modal-overlay.open { display: flex; }
-
-.modal-content {
-    background: linear-gradient(160deg, #1a1a1a 0%, #050505 100%);
-    border: 1px solid #333;
-    border-radius: 24px;
-    padding: 2.5rem 2rem;
-    width: 90%;
-    max-width: 380px;
-    position: relative;
-    text-align: center;
-    box-shadow: 0 0 60px rgba(0, 255, 136, 0.1);
-    animation: popupEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Borda Holográfica Animada */
-.cyber-border::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; height: 1px;
-    background: linear-gradient(90deg, transparent, var(--neon-green), transparent);
-    animation: scanline 2s linear infinite;
-    opacity: 0.7;
-}
-
-/* Header do Modal */
-.live-badge {
-    background: rgba(255, 0, 68, 0.15);
-    color: var(--neon-red);
-    border: 1px solid var(--neon-red);
-    font-size: 0.65rem;
-    padding: 4px 10px;
-    border-radius: 12px;
-    display: inline-block;
-    margin-bottom: 15px;
-    font-weight: 800;
-    letter-spacing: 1px;
-}
-
-.blink-dot {
-    display: inline-block;
-    width: 6px; height: 6px;
-    background: var(--neon-red);
-    border-radius: 50%;
-    margin-right: 5px;
-    animation: blink 1s infinite;
-}
-
-.modal-header h2 {
-    font-size: 2rem;
-    margin: 5px 0;
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    color: white;
-    line-height: 1;
-}
-
-.neon-text {
-    color: var(--neon-green);
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-}
-
-.subtitle {
-    color: #666;
-    font-size: 0.85rem;
-    margin-bottom: 30px;
-    margin-top: 10px;
-}
-
-/* Inputs Futuristas */
-.input-group {
-    position: relative;
-    margin-bottom: 25px;
-    text-align: left;
-}
-
-.input-group input {
-    width: 100%;
-    padding: 16px 50px 16px 50px; /* Espaço para ícones */
-    background: #0f0f0f;
-    border: none;
-    border-radius: 14px;
-    color: #fff;
-    font-size: 1rem;
-    transition: 0.3s;
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
-}
-
-.input-group input:focus {
-    background: #151515;
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.8), 0 0 0 2px var(--neon-green);
-    outline: none;
-}
-
-/* Linha Animada do Input */
-.input-line {
-    position: absolute;
-    bottom: 0; left: 50%; width: 0; height: 2px;
-    background: var(--neon-green);
-    transition: 0.4s;
-    transform: translateX(-50%);
-    z-index: 5;
-}
-
-.input-group input:focus ~ .input-line {
-    width: 80%;
-}
-
-/* Labels Flutuantes */
-.input-group label {
-    position: absolute;
-    left: 50px;
-    top: 16px;
-    color: #555;
-    pointer-events: none;
-    transition: 0.3s;
-    font-weight: 500;
-}
-
-.input-group input:focus ~ label,
-.input-group input:not(:placeholder-shown) ~ label {
-    top: -12px; left: 15px;
-    font-size: 0.7rem;
-    color: var(--neon-green);
-    background: #1a1a1a;
-    padding: 0 8px;
-    border-radius: 4px;
-}
-
-.input-group .icon {
-    position: absolute;
-    left: 18px; top: 18px;
-    color: #444;
-    font-size: 1.1rem;
-    transition: 0.3s;
-}
-
-.input-group input:focus ~ .icon { color: var(--neon-green); }
-
-/* Olho Mágico */
-.eye-toggle {
-    position: absolute;
-    right: 18px; top: 18px;
-    color: #666;
-    cursor: pointer;
-    z-index: 10;
-    padding: 5px; /* Aumenta área de toque */
-}
-
-/* Botão Nuclear (Call to Action) */
-.cyber-btn {
-    width: 100%;
+/* Interface Sobre o Vídeo (Overlay) */
+.video-ui {
+    position: absolute; bottom: 60px; left: 0; width: 100%;
     padding: 20px;
-    background: var(--neon-green);
-    border: none;
-    border-radius: 14px;
-    color: #000;
-    font-weight: 900;
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
-    transition: 0.3s;
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    pointer-events: none; /* Deixa clicar no vídeo */
 }
 
-.cyber-btn:hover {
-    transform: scale(1.02);
-    box-shadow: 0 0 50px rgba(0, 255, 136, 0.6);
-    letter-spacing: 1px;
+.video-info { margin-bottom: 15px; width: 80%; pointer-events: auto; }
+.username { font-weight: 800; font-size: 1.1rem; margin-bottom: 5px; text-shadow: 1px 1px 2px black; }
+.description { font-size: 0.9rem; color: #ddd; line-height: 1.3; text-shadow: 1px 1px 2px black; }
+
+/* Barra Lateral de Ações */
+.actions-sidebar {
+    position: absolute; right: 10px; bottom: 80px;
+    display: flex; flex-direction: column; gap: 20px; align-items: center;
+    pointer-events: auto;
+}
+.action-btn { display: flex; flex-direction: column; align-items: center; text-shadow: 1px 1px 3px black; }
+.action-btn i { font-size: 1.8rem; margin-bottom: 5px; transition: 0.2s; }
+.action-btn span { font-size: 0.7rem; font-weight: 600; }
+.action-btn:active i { transform: scale(0.8); color: var(--primary); }
+
+/* === VAULT VIEW (Escondida por padrão) === */
+.hidden-view { display: none; }
+#vault-view { padding: 80px 10px 80px 10px; height: 100vh; overflow-y: auto; }
+.grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-item { position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #222; }
+.grid-item img { width: 100%; height: 100%; object-fit: cover; }
+.locked-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    color: var(--primary);
 }
 
-.cyber-btn:active {
-    transform: scale(0.98);
+/* === BOTTOM NAV (Barra Inferior) === */
+.bottom-nav {
+    position: fixed; bottom: 0; width: 100%; height: 60px;
+    background: black; border-top: 1px solid #222;
+    display: flex; justify-content: space-around; align-items: center;
+    z-index: 200;
 }
+.nav-item { color: #666; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; width: 20%; cursor: pointer; }
+.nav-item.active { color: white; }
+.nav-item i { font-size: 1.4rem; margin-bottom: 3px; }
 
-.btn-glare {
-    position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-    animation: shine 3s infinite;
+/* Botão Plus Central */
+.plus-circle {
+    width: 45px; height: 30px; background: linear-gradient(90deg, #00f2ea, #ff0050);
+    border-radius: 8px; display: flex; justify-content: center; align-items: center;
+    border-left: 3px solid #00f2ea; border-right: 3px solid #ff0050;
 }
+.plus-circle i { color: white; margin: 0; font-size: 1rem; }
 
-/* Footer do Modal */
-.modal-footer {
-    margin-top: 30px;
-    border-top: 1px solid #222;
-    padding-top: 20px;
+/* === MODAL & ANIMAÇÕES === */
+.modal-overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
 }
-
-.login-link {
-    font-size: 0.9rem;
-    color: #888;
+.modal-card {
+    background: #111; border: 1px solid #333; padding: 30px; border-radius: 20px;
+    width: 90%; text-align: center; position: relative;
 }
-
-.login-link a {
-    color: var(--neon-green);
-    text-decoration: none;
-    font-weight: bold;
+.cta-button {
+    background: var(--primary); color: black; border: none; width: 100%; padding: 15px;
+    font-weight: 900; border-radius: 10px; margin-top: 15px; font-size: 1rem;
 }
-
-.trust-badges {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    font-size: 0.65rem;
-    color: #444;
-    text-transform: uppercase;
-    font-weight: 700;
-}
-
-.trust-badges span {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.close-btn {
-    position: absolute;
-    top: 15px; right: 20px;
-    background: none; border: none;
-    color: #444; font-size: 2.2rem;
-    cursor: pointer; transition: 0.3s;
-    z-index: 10;
-}
-.close-btn:hover { color: #fff; transform: rotate(90deg); }
-
-/* =========================================
-   === 6. ANIMAÇÕES & EFEITOS ===
-   ========================================= */
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-@keyframes popupEnter {
-    from { transform: scale(0.8) translateY(50px); opacity: 0; }
-    to { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-@keyframes blink { 
-    0%, 100% { opacity: 1; } 
-    50% { opacity: 0.3; } 
-}
-
-@keyframes scanline { 
-    0% { left: -100%; } 
-    100% { left: 100%; } 
-}
-
-@keyframes shine { 
-    0% { left: -100%; } 
-    20% { left: 200%; } 
-    100% { left: 200%; } 
-}
-
-/* Efeito Glitch no Texto */
-.glitch {
-    position: relative;
-}
-.glitch::before, .glitch::after {
-    content: attr(data-text);
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: #1a1a1a; /* Mesma cor do fundo do modal */
-}
-.glitch::before {
-    left: 2px;
-    text-shadow: -1px 0 red;
-    clip: rect(24px, 550px, 90px, 0);
-    animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
-}
-.glitch::after {
-    left: -2px;
-    text-shadow: -1px 0 blue;
-    clip: rect(85px, 550px, 140px, 0);
-    animation: glitch-anim-2 3s infinite linear alternate-reverse;
-}
-
-@keyframes glitch-anim-1 {
-    0% { clip: rect(20px, 9999px, 80px, 0); }
-    20% { clip: rect(60px, 9999px, 10px, 0); }
-    100% { clip: rect(10px, 9999px, 90px, 0); }
-}
-@keyframes glitch-anim-2 {
-    0% { clip: rect(90px, 9999px, 10px, 0); }
-    20% { clip: rect(10px, 9999px, 50px, 0); }
-    100% { clip: rect(50px, 9999px, 20px, 0); }
-}
+@keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }

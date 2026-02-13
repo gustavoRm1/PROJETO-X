@@ -3,141 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AXTRON | Premium Access</title>
-    
+    <title>AXTRON | Premium Stream</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" href="css/style.css">
-
     <script src="js/config.js"></script>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="logo">
-            AXTRON <span class="neon-dot">.</span>
+    <header class="top-bar">
+        <div class="live-status">
+            <span class="pulsing-dot"></span> LIVE
         </div>
-        <div class="header-icons">
+        <div class="tabs-control">
+            <span class="active-tab">Para Você</span>
+            <span>Seguindo</span>
+        </div>
+        <div class="search-icon">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <i class="fa-solid fa-user-astronaut active-icon" onclick="abrirModal()"></i>
         </div>
     </header>
 
-    <main id="feed-container">
-        <div class="loader-container">
-            <div class="cyber-loader"></div>
-            <p>Conectando ao Satélite...</p>
-        </div>
+    <main id="app-view">
+        
+        <section id="feed-view" class="active-view">
+            <div class="loader-center">
+                <div class="spinner"></div>
+            </div>
+        </section>
+
+        <section id="vault-view" class="hidden-view">
+            <div class="vault-header">
+                <h2>THE VAULT <i class="fa-solid fa-lock"></i></h2>
+                <p>Conteúdo Exclusivo & Vazados</p>
+            </div>
+            <div id="vault-grid" class="grid-container">
+                </div>
+        </section>
+
     </main>
 
     <nav class="bottom-nav">
-        <a href="#" class="nav-item active">
-            <i class="fa-solid fa-house-fire"></i>
-            <span>Feed</span>
-        </a>
-        <a href="#" class="nav-item">
+        <div class="nav-item active" onclick="switchTab('feed')">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('vault')">
             <i class="fa-solid fa-compass"></i>
-            <span>Explorar</span>
-        </a>
-        <a href="#" class="nav-item center-btn" onclick="abrirModal()">
-            <i class="fa-solid fa-plus"></i>
-        </a>
-        <a href="#" class="nav-item">
-            <i class="fa-solid fa-bell"></i>
-            <span>Alertas</span>
-        </a>
-        <a href="#" class="nav-item" onclick="app.ui.openLoginModal()">
-            <i class="fa-solid fa-lock"></i>
-            <span>Cofre VIP</span>
-        </a>
+            <span>Explore</span>
+        </div>
+        
+        <div class="nav-item center-add" onclick="abrirModal()">
+            <div class="plus-circle">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+
+        <div class="nav-item" onclick="alert('Caixa de Entrada Vazia')">
+            <i class="fa-regular fa-message"></i>
+            <span>Inbox</span>
+        </div>
+        <div class="nav-item" onclick="abrirModal()">
+            <i class="fa-regular fa-user"></i>
+            <span>Perfil</span>
+        </div>
     </nav>
 
     <div id="signup-modal" class="modal-overlay">
-        <div class="modal-content cyber-border">
-            <button class="close-btn" onclick="fecharModal()">&times;</button>
+        <div class="modal-card">
+            <button class="close-modal" onclick="fecharModal()">&times;</button>
+            <div class="modal-glitch-header" data-text="RESTRICTED">RESTRICTED</div>
+            <p class="modal-sub">Este conteúdo é exclusivo para membros.</p>
             
-            <div class="modal-header">
-                <div class="live-badge"><span class="blink-dot"></span> 1,420 ONLINE</div>
-                <h2 class="glitch" data-text="ACCESS_DENIED">UNLOCK <span class="neon-text">VAULT</span></h2>
-                <p class="subtitle">O conteúdo explícito está bloqueado.</p>
-            </div>
-
-            <form id="signup-form" onsubmit="registrarUsuario(event)">
-                <div class="input-group">
-                    <input type="email" id="email" required placeholder=" " autocomplete="off">
-                    <label for="email">Seu E-mail (Sigiloso)</label>
-                    <i class="icon fa-solid fa-user-secret"></i>
-                    <div class="input-line"></div>
+            <form onsubmit="registrarUsuario(event)">
+                <div class="cyber-input">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Seu melhor e-mail" required>
                 </div>
-
-                <div class="input-group">
-                    <input type="password" id="password" required placeholder=" ">
-                    <label for="password">Crie sua Senha</label>
-                    <i class="icon fa-solid fa-lock"></i>
-                    <i class="eye-toggle fa-solid fa-eye-slash" onclick="togglePassword()"></i>
-                    <div class="input-line"></div>
+                <div class="cyber-input">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="password" placeholder="Senha segura" required>
                 </div>
-
-                <button type="submit" class="cyber-btn">
-                    <span class="btn-glare"></span>
-                    <span class="btn-text">LIBERAR ACESSO AGORA</span>
-                    <i class="fa-solid fa-unlock-keyhole"></i>
+                <button type="submit" class="cta-button">
+                    DESBLOQUEAR TUDO <i class="fa-solid fa-unlock"></i>
                 </button>
             </form>
-
-            <div class="modal-footer">
-                <p class="login-link">Já é membro VIP? <a href="#" onclick="alert('Login em breve!')">ENTRAR</a></p>
-                <div class="trust-badges">
-                    <span><i class="fa-brands fa-bitcoin"></i> Crypto</span>
-                    <span><i class="fa-solid fa-shield-cat"></i> No Logs</span>
-                    <span><i class="fa-solid fa-mask"></i> Anon</span>
+            
+            <div class="social-proof">
+                <div class="avatars">
+                    <span></span><span></span><span></span>
                 </div>
+                <p>+128 pessoas entraram hoje.</p>
             </div>
         </div>
     </div>
-
-    <div id="loginModal" class="modal-overlay">
-        <div class="modal-content cyber-border">
-            <button class="close-btn" onclick="app.ui.closeLoginModal()">&times;</button>
-            <div class="modal-header">
-                <div class="live-badge"><span class="blink-dot"></span> 24/7 SECURE</div>
-                <h2 class="glitch" data-text="LOGIN_REQUIRED">ENTRAR <span class="neon-text">AGORA</span></h2>
-                <p class="subtitle">Use suas credenciais para continuar.</p>
-            </div>
-            <div class="input-group">
-                <input type="email" required placeholder=" " autocomplete="off">
-                <label>E-mail</label>
-                <i class="icon fa-solid fa-user"></i>
-                <div class="input-line"></div>
-            </div>
-            <div class="input-group">
-                <input type="password" required placeholder=" ">
-                <label>Senha</label>
-                <i class="icon fa-solid fa-lock"></i>
-                <div class="input-line"></div>
-            </div>
-            <p id="loginMsg" style="color:#888; margin:0 0 10px; font-size:0.9rem;"></p>
-            <button onclick="Auth.login()" class="btn-primary-glow" style="width:100%; justify-content:center;">ENTRAR AGORA</button>
-        </div>
-    </div>
-
-    <script>
-    function togglePassword() {
-        const passInput = document.getElementById('password');
-        const eyeIcon = document.querySelector('.eye-toggle');
-        if (passInput.type === 'password') {
-            passInput.type = 'text';
-            eyeIcon.classList.remove('fa-eye-slash');
-            eyeIcon.classList.add('fa-eye');
-            eyeIcon.style.color = '#00ff88';
-        } else {
-            passInput.type = 'password';
-            eyeIcon.classList.remove('fa-eye');
-            eyeIcon.classList.add('fa-eye-slash');
-            eyeIcon.style.color = '#666';
-        }
-    }
-    </script>
 
     <script src="js/script.js"></script>
 </body>
