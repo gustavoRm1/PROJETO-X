@@ -318,21 +318,22 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="success-message" class="hidden mt-6 p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-2xl font-bold mb-2">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        Vídeo Publicado com Sucesso!
-                    </p>
-                    <p class="text-green-100">O vídeo está online em 10 idiomas com SEO otimizado</p>
+            
+            <!-- Success Message -->
+            <div id="success-message" class="hidden mt-6 p-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-2xl font-bold mb-2">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Vídeo Publicado com Sucesso!
+                        </p>
+                        <p class="text-green-100">O vídeo está online em 10 idiomas com SEO otimizado</p>
+                    </div>
+                    <a id="view-video-link" href="#" target="_blank" class="px-6 py-3 bg-white text-green-600 rounded-lg font-bold hover:bg-green-50 transition">
+                        Ver Vídeo
+                        <i class="fas fa-external-link-alt ml-2"></i>
+                    </a>
                 </div>
-                <a id="view-video-link" href="#" target="_blank" class="px-6 py-3 bg-white text-green-600 rounded-lg font-bold hover:bg-green-50 transition">
-                    Ver Vídeo
-                    <i class="fas fa-external-link-alt ml-2"></i>
-                </a>
             </div>
         </div>
     </div>
@@ -341,6 +342,9 @@
         const API_URL = window.location.origin + '/api';
         let currentVideoId = null;
         
+        // ========================
+        // DROP ZONE
+        // ========================
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('video-file');
         
@@ -384,6 +388,9 @@
             return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
         }
         
+        // ========================
+        // UPLOAD
+        // ========================
         async function uploadVideo(e) {
             e.preventDefault();
             
@@ -393,6 +400,7 @@
                 return;
             }
             
+            // Validação de tamanho
             if (file.size > 5 * 1024 * 1024 * 1024) {
                 alert('❌ Arquivo muito grande! Máximo 5GB');
                 return;
@@ -403,6 +411,7 @@
             formData.append('category_id', document.getElementById('category').value);
             formData.append('is_premium', document.getElementById('is-premium').checked ? 1 : 0);
             
+            // UI
             document.getElementById('upload-btn').disabled = true;
             document.getElementById('upload-progress').classList.remove('hidden');
             document.getElementById('tasks-container').classList.remove('hidden');
@@ -410,6 +419,7 @@
             try {
                 const xhr = new XMLHttpRequest();
                 
+                // Progress bar
                 xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable) {
                         const percent = Math.round((e.loaded / e.total) * 100);
@@ -424,6 +434,7 @@
                         
                         updateProgress(100, '✅ Upload completo! Iniciando processamento...');
                         
+                        // Iniciar monitoramento
                         setTimeout(() => {
                             monitorProcessing(response.videoId);
                         }, 2000);
@@ -452,6 +463,9 @@
             document.getElementById('progress-text').textContent = text;
         }
         
+        // ========================
+        // MONITOR PROCESSING
+        // ========================
         async function monitorProcessing(videoId) {
             const interval = setInterval(async () => {
                 try {
@@ -463,16 +477,19 @@
                     
                     const data = await res.json();
                     
+                    // Atualizar tasks
                     if (data.tasks) {
                         data.tasks.forEach(task => {
                             updateTaskStatus(task.type, task.status);
                         });
                     }
                     
+                    // Atualizar progresso
                     if (data.progress) {
                         updateProgress(data.progress, `Processamento ${data.progress}%`);
                     }
                     
+                    // Se completo
                     if (data.status === 'ready') {
                         clearInterval(interval);
                         showSuccess(videoId, data.uuid);
@@ -480,9 +497,11 @@
                     
                 } catch (error) {
                     console.error('Erro ao monitorar:', error);
+                    // Continuar tentando
                 }
-            }, 3000);
+            }, 3000); // A cada 3 segundos
             
+            // Timeout de segurança (10 minutos)
             setTimeout(() => {
                 clearInterval(interval);
                 console.warn('Timeout do monitoramento');
@@ -508,8 +527,10 @@
             document.getElementById('success-message').classList.remove('hidden');
             document.getElementById('view-video-link').href = `/video/${uuid}`;
             
+            // Atualizar stats
             loadStats();
             
+            // Reset após 10 segundos
             setTimeout(() => {
                 resetForm();
             }, 10000);
@@ -523,11 +544,15 @@
             document.getElementById('file-info').classList.add('hidden');
             document.getElementById('success-message').classList.add('hidden');
             
+            // Reset task status
             ['thumbnail', 'metadata', 'translation', 'transcription'].forEach(task => {
                 document.getElementById(`task-${task}`).innerHTML = '<i class="fas fa-clock mr-2"></i>Aguardando...';
             });
         }
         
+        // ========================
+        // STATS
+        // ========================
         async function loadStats() {
             try {
                 const res = await fetch(`${API_URL}/admin/stats`);
@@ -542,6 +567,7 @@
             }
         }
         
+        // Atualizar stats a cada 5 segundos
         setInterval(loadStats, 5000);
         loadStats();
         
@@ -550,6 +576,7 @@
             window.location.href = '/login.html';
         }
         
+        // Check auth
         if (!localStorage.getItem('auth_token')) {
             window.location.href = '/login.html';
         }

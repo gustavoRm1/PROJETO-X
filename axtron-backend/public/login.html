@@ -1,22 +1,196 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AXTRON | Login</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - DesejosHot Admin</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: transform 0.2s;
+        }
+        
+        .btn-login:hover {
+            transform: scale(1.02);
+        }
+        
+        .input-field {
+            transition: all 0.3s;
+        }
+        
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+    </style>
 </head>
-<body class="center">
-  <div class="card">
-    <h2>Entrar</h2>
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Senha">
-    <button onclick="login()">Acessar</button>
-    <p style="color:#a3a3a3;font-size:12px;margin-top:10px;">MVP: login local (sem servidor). Apenas salva no navegador.</p>
-  </div>
-  <script src="js/auth.js"></script>
+<body>
+    
+    <div class="login-card rounded-2xl p-8 w-full max-w-md mx-4">
+        <!-- Logo -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full mb-4">
+                <i class="fas fa-fire text-white text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-gray-800">DesejosHot</h1>
+            <p class="text-gray-600 mt-2">Painel Administrativo</p>
+        </div>
+        
+        <!-- Alert -->
+        <div id="alert" class="hidden mb-4 p-4 rounded-lg"></div>
+        
+        <!-- Form -->
+        <form id="login-form" onsubmit="login(event)">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-user mr-2 text-purple-600"></i>
+                    Usuário
+                </label>
+                <input 
+                    type="text" 
+                    id="username" 
+                    class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    placeholder="admin"
+                    required
+                >
+            </div>
+            
+            <div class="mb-6">
+                <label class="block text-gray-700 font-semibold mb-2">
+                    <i class="fas fa-lock mr-2 text-purple-600"></i>
+                    Senha
+                </label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="input-field w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:outline-none"
+                    placeholder="••••••••"
+                    required
+                >
+            </div>
+            
+            <button 
+                type="submit" 
+                id="login-btn"
+                class="btn-login w-full text-white py-3 rounded-lg font-bold text-lg"
+            >
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Entrar
+            </button>
+        </form>
+        
+        <!-- Info -->
+        <div class="mt-6 p-4 bg-blue-50 rounded-lg text-sm text-blue-800">
+            <i class="fas fa-info-circle mr-2"></i>
+            <strong>Credenciais padrão:</strong><br>
+            Usuário: <code class="bg-blue-100 px-2 py-1 rounded">admin</code><br>
+            Senha: <code class="bg-blue-100 px-2 py-1 rounded">admin</code>
+        </div>
+        
+        <!-- Footer -->
+        <div class="mt-6 text-center text-sm text-gray-500">
+            <p>
+                <i class="fas fa-shield-alt mr-1"></i>
+                Acesso restrito apenas para administradores
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        
+        async function login(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
+            const alert = document.getElementById('alert');
+            
+            // Disable button
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Entrando...';
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    // Salvar token
+                    localStorage.setItem('auth_token', data.token);
+                    
+                    // Success
+                    showAlert('success', 'Login realizado com sucesso! Redirecionando...');
+                    
+                    // Redirect
+                    setTimeout(() => {
+                        window.location.href = '/admin.html';
+                    }, 1000);
+                    
+                } else {
+                    throw new Error(data.error || 'Erro ao fazer login');
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showAlert('error', error.message || 'Usuário ou senha incorretos');
+                
+                // Re-enable button
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Entrar';
+            }
+        }
+        
+        function showAlert(type, message) {
+            const alert = document.getElementById('alert');
+            
+            if (type === 'success') {
+                alert.className = 'mb-4 p-4 rounded-lg bg-green-100 text-green-800 border-2 border-green-300';
+                alert.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
+            } else {
+                alert.className = 'mb-4 p-4 rounded-lg bg-red-100 text-red-800 border-2 border-red-300';
+                alert.innerHTML = `<i class="fas fa-exclamation-circle mr-2"></i>${message}`;
+            }
+            
+            alert.classList.remove('hidden');
+            
+            // Auto-hide error after 5s
+            if (type === 'error') {
+                setTimeout(() => {
+                    alert.classList.add('hidden');
+                }, 5000);
+            }
+        }
+        
+        // Check if already logged in
+        if (localStorage.getItem('auth_token')) {
+            window.location.href = '/admin.html';
+        }
+    </script>
 </body>
 </html>
