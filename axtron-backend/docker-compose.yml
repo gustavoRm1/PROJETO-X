@@ -18,6 +18,24 @@ services:
     networks:
       - axtron_net
 
+  # NOVO SERVIÇO: WORKER DE IA
+  worker:
+    build: .
+    command: npm run worker
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    depends_on:
+      - postgres
+      - redis
+      - app
+    networks:
+      - axtron_net
+
   # 2. Banco de Dados
   postgres:
     image: postgres:15
